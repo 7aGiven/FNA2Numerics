@@ -12,7 +12,7 @@ namespace FNA2Numerics
         {
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage: Do both command\nFNA2Numerics.exe FNA.dll\nFNA2Numerics.exe game.exe");
+                Console.Error.WriteLine("Usage: Do both command\nFNA2Numerics.exe FNA.dll\nFNA2Numerics.exe game.exe");
                 return;
             }
             string path = args[0];
@@ -30,9 +30,9 @@ namespace FNA2Numerics
                 for (int i = 0; i < resources.Count; i++)
                 {
                     EmbeddedResource embeddedResource = resources[i] as EmbeddedResource;
-                    Console.WriteLine(embeddedResource.Name);
                     if (embeddedResource.Name.EndsWith(".dll"))
                     {
+                        Console.WriteLine(embeddedResource.Name);
                         ModuleDefinition embeddedModuleDefinition = ModuleDefinition.ReadModule(embeddedResource.GetResourceStream());
                         ProcessExport(embeddedModuleDefinition);
                         using (MemoryStream memoryStream = new MemoryStream())
@@ -124,7 +124,6 @@ namespace FNA2Numerics
                         int index = Array.IndexOf(types, typeReference.Name);
                         if (index != -1 && (methodReference.ReturnType == moduleDefinition.TypeSystem.Void || Array.IndexOf(methods, methodReference.Name) != -1))
                         {
-                            Console.WriteLine(methodReference);
                             methodReference.DeclaringType = extensionTypeReferences[index];
                         }
                     }
