@@ -21,3 +21,6 @@ using System.Runtime.InteropServices;
 [assembly: TypeForwardedTo(typeof(System.Numerics.Vector2))]
 [assembly: TypeForwardedTo(typeof(System.Numerics.Vector3))]
 [assembly: TypeForwardedTo(typeof(System.Numerics.Vector4))]
+[assembly: TypeForwardedTo(typeof(System.Numerics.Matrix4x4))]
+[assembly: TypeForwardedTo(typeof(System.Numerics.Plane))]
+[assembly: TypeForwardedTo(typeof(System.Numerics.Quaternion))]

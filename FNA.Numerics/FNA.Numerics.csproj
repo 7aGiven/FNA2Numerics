@@ -32,6 +32,9 @@
     <PreferNativeArm64>true</PreferNativeArm64>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MatrixExtension.cs" />
+    <Compile Include="PlaneExtension.cs" />
+    <Compile Include="QuaternionExtension.cs" />
     <Compile Include="Vector2Extension.cs" />
     <Compile Include="Vector3Extension.cs" />
     <Compile Include="Vector4Extension.cs" />

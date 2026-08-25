@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Collections.Generic;
@@ -8,6 +11,7 @@ namespace FNA2Numerics
 {
     static class Program
     {
+        static HashSet<string> methodForward = new HashSet<string>();
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -17,6 +21,15 @@ namespace FNA2Numerics
             }
             string path = args[0];
 
+            Stream stream = Assembly.GetEntryAssembly().GetManifestResourceStream("FNA2Numerics.forward.txt");
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    methodForward.Add(line);
+                }
+            }
             if (path.EndsWith("FNA.dll"))
             {
                 ModuleDefinition moduleDefinition = ModuleDefinition.ReadModule(path, new ReaderParameters() { ReadWrite = true });
@@ -25,6 +38,7 @@ namespace FNA2Numerics
             }
             else
             {
+                Directory.SetCurrentDirectory(Path.GetDirectoryName(path));
                 ModuleDefinition moduleDefinition = ModuleDefinition.ReadModule(path, new ReaderParameters() { ReadWrite = true });
                 Collection<Resource> resources = moduleDefinition.Resources;
                 for (int i = 0; i < resources.Count; i++)
@@ -48,10 +62,10 @@ namespace FNA2Numerics
             }
         }
 
-        static readonly string[] types = new string[] { "Vector2", "Vector3", "Vector4" };
-        static readonly string[] methods = new string[] { "Barycentric", "CatmullRom", "Hermite", "SmoothStep", "get_Up", "get_Down", "get_Right", "get_Left", "get_Forward", "get_Backward" };
-        static readonly TypeReference[] extensionTypeReferences = new TypeReference[types.Length];
-        static readonly TypeReference[] typeReferences = new TypeReference[types.Length];
+        static readonly string[] xnaTypes = new string[] { "Vector2", "Vector3", "Vector4", "Matrix", "Plane", "Quaternion" };
+        static readonly string[] numericsTypes = new string[] { "Vector2", "Vector3", "Vector4", "Matrix4x4", "Plane", "Quaternion" };
+        static readonly TypeReference[] extensionTypeReferences = new TypeReference[xnaTypes.Length];
+        static readonly TypeReference[] typeReferences = new TypeReference[numericsTypes.Length];
 
         static TypeReference ReplaceType(TypeReference typeReference)
         {
@@ -88,7 +102,7 @@ namespace FNA2Numerics
             {
                 if (checkTypeReference.Namespace == "Microsoft.Xna.Framework")
                 {
-                    int index = Array.IndexOf(types, checkTypeReference.Name);
+                    int index = Array.IndexOf(xnaTypes, checkTypeReference.Name);
                     if (index != -1)
                     {
                         if (typeReference.IsByReference)
@@ -109,9 +123,13 @@ namespace FNA2Numerics
         {
             AssemblyNameReference Numerics = new AssemblyNameReference("FNA.Numerics", null);
             moduleDefinition.AssemblyReferences.Add(Numerics);
-            for (int i = 0; i < types.Length; i++)
+            for (int i = 0; i < numericsTypes.Length; i++)
             {
-                extensionTypeReferences[i] = moduleDefinition.ImportReference(new TypeReference("FNA.Numerics", types[i] + "Extension", moduleDefinition, Numerics));
+                typeReferences[i] = moduleDefinition.ImportReference(new TypeReference("System.Numerics", numericsTypes[i], moduleDefinition, Numerics) { IsValueType = true });
+            }
+            for (int i = 0; i < xnaTypes.Length; i++)
+            {
+                extensionTypeReferences[i] = moduleDefinition.ImportReference(new TypeReference("FNA.Numerics", xnaTypes[i] + "Extension", moduleDefinition, Numerics));
             }
             foreach (MemberReference memberReference in moduleDefinition.GetMemberReferences())
             {
@@ -121,22 +139,28 @@ namespace FNA2Numerics
                     TypeReference typeReference = methodReference.DeclaringType;
                     if (typeReference.Namespace == "Microsoft.Xna.Framework")
                     {
-                        int index = Array.IndexOf(types, typeReference.Name);
-                        if (index != -1 && (methodReference.ReturnType == moduleDefinition.TypeSystem.Void || Array.IndexOf(methods, methodReference.Name) != -1))
+                        int index = Array.IndexOf(xnaTypes, typeReference.Name);
+                        if (index != -1 && !methodForward.Contains(StringFromMethod(methodReference)))
                         {
+                            if (methodReference.HasThis)
+                            {
+                                methodReference.HasThis = false;
+                                methodReference.Parameters.Add(new ParameterDefinition(new ByReferenceType(typeReferences[index])));
+                            }
                             methodReference.DeclaringType = extensionTypeReferences[index];
                         }
                     }
                 }
             }
-            foreach (string type in types)
+            for (int index = 0; index < xnaTypes.Length; index++)
             {
-                TypeReference typeReference2;
-                moduleDefinition.TryGetTypeReference("Microsoft.Xna.Framework." + type, out typeReference2);
-                if (typeReference2 != null)
+                TypeReference typeReference;
+                moduleDefinition.TryGetTypeReference("Microsoft.Xna.Framework." + xnaTypes[index], out typeReference);
+                if (typeReference != null)
                 {
-                    typeReference2.Scope = Numerics;
-                    typeReference2.Namespace = "System.Numerics";
+                    typeReference.Scope = Numerics;
+                    typeReference.Namespace = "System.Numerics";
+                    typeReference.Name = numericsTypes[index];
                 }
             }
         }
@@ -145,13 +169,13 @@ namespace FNA2Numerics
         {
             AssemblyNameReference Numerics = new AssemblyNameReference("FNA.Numerics", null);
             moduleDefinition.AssemblyReferences.Add(Numerics);
-            for (int i = 0; i < types.Length; i++)
+            for (int i = 0; i < numericsTypes.Length; i++)
             {
-                typeReferences[i] = moduleDefinition.ImportReference(new TypeReference("FNA.Numerics", types[i], moduleDefinition, Numerics));
+                typeReferences[i] = moduleDefinition.ImportReference(new TypeReference("System.Numerics", numericsTypes[i], moduleDefinition, Numerics) { IsValueType = true });
             }
-            for (int i = 0; i < types.Length; i++)
+            for (int i = 0; i < xnaTypes.Length; i++)
             {
-                extensionTypeReferences[i] = moduleDefinition.ImportReference(new TypeReference("FNA.Numerics", types[i] + "Extension", moduleDefinition, Numerics));
+                extensionTypeReferences[i] = moduleDefinition.ImportReference(new TypeReference("FNA.Numerics", xnaTypes[i] + "Extension", moduleDefinition, Numerics));
             }
             foreach (TypeDefinition typeDefinition in moduleDefinition.Types)
             {
@@ -241,6 +265,11 @@ namespace FNA2Numerics
                             FieldDefinition fd = instruction.Operand as FieldDefinition;
                             if (fd != null)
                             {
+                                replace = ReplaceType(fd.FieldType);
+                                if (replace != null)
+                                {
+                                    fd.FieldType = replace;
+                                }
                                 replace = ReplaceType(fd.DeclaringType);
                                 if (replace != null)
                                 {
@@ -273,19 +302,25 @@ namespace FNA2Numerics
                                 }
                                 if (md.DeclaringType.Namespace == "Microsoft.Xna.Framework")
                                 {
-                                    int index = Array.IndexOf(types, md.DeclaringType.Name);
+                                    int index = Array.IndexOf(xnaTypes, md.DeclaringType.Name);
                                     if (index != -1)
                                     {
                                         TypeReference declaringType;
-                                        if (md.ReturnType == moduleDefinition.TypeSystem.Void || Array.IndexOf(methods, md.Name) != -1)
-                                        {
-                                            declaringType = extensionTypeReferences[index];
-                                        }
-                                        else
+                                        if (methodForward.Contains(StringFromMethod(md)))
                                         {
                                             declaringType = typeReferences[index];
                                         }
-                                        instruction.Operand = moduleDefinition.ImportReference(new MethodReference(md.Name, md.ReturnType, declaringType));
+                                        else
+                                        {
+                                            declaringType = extensionTypeReferences[index];
+                                        }
+                                        MethodReference mdRef = new MethodReference(md.Name, md.ReturnType, declaringType);
+                                        mdRef.HasThis = md.HasThis;
+                                        foreach (ParameterDefinition pd in md.Parameters)
+                                        {
+                                            mdRef.Parameters.Add(pd);
+                                        }
+                                        instruction.Operand = moduleDefinition.ImportReference(mdRef);
                                     }
                                 }
                             }
@@ -296,12 +331,40 @@ namespace FNA2Numerics
                             replace = ReplaceType(md.DeclaringType);
                             if (replace != null)
                             {
-                                instruction.Operand = moduleDefinition.ImportReference(new MethodReference(md.Name, md.ReturnType, replace));
+                                MethodReference mdRef = new MethodReference(md.Name, md.ReturnType, replace);
+                                mdRef.HasThis = md.HasThis;
+                                foreach (ParameterDefinition pd in md.Parameters)
+                                {
+                                    mdRef.Parameters.Add(pd);
+                                }
+                                instruction.Operand = moduleDefinition.ImportReference(mdRef);
                             }
                         }
                     }
                 }
             }
+        }
+
+        static string StringFromMethod(MethodReference methodReference)
+        {
+            bool flag = false;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(methodReference.DeclaringType.Name);
+            sb.Append('.');
+            sb.Append(methodReference.Name);
+            sb.Append('(');
+            foreach (ParameterDefinition parameterDefinition in methodReference.Parameters)
+            {
+                flag = true;
+                sb.Append(parameterDefinition.ParameterType.Name);
+                sb.Append(',');
+            }
+            if (flag)
+            {
+                sb.Length -= 1;
+            }
+            sb.Append(')');
+            return sb.ToString();
         }
     }
 }

@@ -1886,7 +1886,12 @@ namespace Mono.Cecil {
 		void AddConstant (IConstantProvider owner, TypeReference type)
 		{
 			var constant = owner.Constant;
-			var etype = GetConstantType (type, constant);
+			ElementType etype;
+			//if (type.etype == ElementType.None) {
+			//	etype = ElementType.Class;
+			//} else {
+				etype = GetConstantType (type, constant);
+			//}
 
 			constant_table.AddRow (new ConstantRow (
 				etype,
@@ -1902,9 +1907,9 @@ namespace Mono.Cecil {
 			var etype = constant_type.etype;
 			switch (etype) {
 			case ElementType.None:
-				//var type = constant_type.CheckedResolve ();
-				//if (type.IsEnum)
-				//	return GetConstantType (type.GetEnumUnderlyingType (), constant);
+				var type = constant_type.CheckedResolve ();
+				if (type.IsEnum)
+					return GetConstantType (type.GetEnumUnderlyingType (), constant);
 
 				return ElementType.Class;
 			case ElementType.String:
