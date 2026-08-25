@@ -184,7 +184,51 @@ namespace FNA2Numerics
                     ProcessClass(nestedType);
                 }
                 ProcessClass(typeDefinition);
+            }
+            for (int i = moduleDefinition.Types.Count - 1; i >= 0; i--)
+            {
+                if (Array.IndexOf(xnaTypes, moduleDefinition.Types[i].Name) != -1)
+                {
+                    moduleDefinition.Types.RemoveAt(i);
+                }
+            }
+            TypeDefinition ContentTypeReaderManager = moduleDefinition.GetType("Microsoft.Xna.Framework.Content", "ContentTypeReaderManager");
+            foreach(MethodDefinition methodDefinition in ContentTypeReaderManager.Methods)
+            {
+                if (methodDefinition.Name == "PrepareType")
+                {
+                    MethodReference replace = moduleDefinition.ImportReference(typeof(string).GetMethod("Replace", new Type[] { typeof(string), typeof(string) }));
+                    Instruction i0 = methodDefinition.Body.Instructions[0];
+                    ILProcessor processor = methodDefinition.Body.GetILProcessor();
 
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldarg_0));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework.Vector2, Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics.Vector2, FNA.Numerics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework.Vector3, Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics.Vector3, FNA.Numerics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework.Vector4, Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics.Vector4, FNA.Numerics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework.Plane, Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics.Plane, FNA.Numerics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework.Quaternion, Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics.Quaternion, FNA.Numerics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework.Matrix, Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics.Matrix4x4, FNA.Numerics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
+
+                    processor.InsertBefore(i0, processor.Create(OpCodes.Starg_S, (byte)0));
+                }
             }
         }
 
@@ -306,7 +350,7 @@ namespace FNA2Numerics
                                     if (index != -1)
                                     {
                                         TypeReference declaringType;
-                                        if (methodForward.Contains(StringFromMethod(md)))
+                                        if (md.IsConstructor || methodForward.Contains(StringFromMethod(md)))
                                         {
                                             declaringType = typeReferences[index];
                                         }
