@@ -1902,9 +1902,9 @@ namespace Mono.Cecil {
 			var etype = constant_type.etype;
 			switch (etype) {
 			case ElementType.None:
-				var type = constant_type.CheckedResolve ();
-				if (type.IsEnum)
-					return GetConstantType (type.GetEnumUnderlyingType (), constant);
+				//var type = constant_type.CheckedResolve ();
+				//if (type.IsEnum)
+				//	return GetConstantType (type.GetEnumUnderlyingType (), constant);
 
 				return ElementType.Class;
 			case ElementType.String:
