@@ -18,7 +18,6 @@ namespace FNA.Numerics
             result = Vector3.Add(value1, value2);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Barycentric(
             Vector3 value1,
             Vector3 value2,
@@ -30,7 +29,6 @@ namespace FNA.Numerics
             return value1 * (1 - amount1 - amount2) + value2 * amount1 + value3 * amount2;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Barycentric(
             ref Vector3 value1,
             ref Vector3 value2,
@@ -43,7 +41,6 @@ namespace FNA.Numerics
             result = value1 * (1 - amount1 - amount2) + value2 * amount1 + value3 * amount2;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 CatmullRom(
             Vector3 value1,
             Vector3 value2,
@@ -62,7 +59,6 @@ namespace FNA.Numerics
             );
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CatmullRom(
             ref Vector3 value1,
             ref Vector3 value2,
@@ -133,7 +129,6 @@ namespace FNA.Numerics
             result = Vector3.Dot(vector1, vector2);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Hermite(
             Vector3 value1,
             Vector3 tangent1,
@@ -149,7 +144,6 @@ namespace FNA.Numerics
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Hermite(
             ref Vector3 value1,
             ref Vector3 tangent1,
@@ -218,7 +212,6 @@ namespace FNA.Numerics
             result = Vector3.Reflect(vector, normal);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SmoothStep(Vector3 value1, Vector3 value2, float amount)
         {
             if (amount > 1f) amount = 1f;
@@ -227,7 +220,6 @@ namespace FNA.Numerics
             return value1 + (value2 - value1) * amount;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SmoothStep(
             ref Vector3 value1,
             ref Vector3 value2,
@@ -318,7 +310,6 @@ namespace FNA.Numerics
             result = Vector3.Transform(value, rotation);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(
             Vector3[] sourceArray,
             ref Quaternion rotation,

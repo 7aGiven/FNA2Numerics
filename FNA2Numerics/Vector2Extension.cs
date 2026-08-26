@@ -18,7 +18,6 @@ namespace FNA.Numerics
             result = Vector2.Add(value1, value2);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Barycentric(
             Vector2 value1,
             Vector2 value2,
@@ -30,7 +29,6 @@ namespace FNA.Numerics
             return value1 * (1 - amount1 - amount2) + value2 * amount1 + value3 * amount2;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Barycentric(
             ref Vector2 value1,
             ref Vector2 value2,
@@ -43,7 +41,6 @@ namespace FNA.Numerics
             result = value1 * (1 - amount1 - amount2) + value2 * amount1 + value3 * amount2;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 CatmullRom(
             Vector2 value1,
             Vector2 value2,
@@ -62,7 +59,6 @@ namespace FNA.Numerics
             );
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CatmullRom(
             ref Vector2 value1,
             ref Vector2 value2,
@@ -127,7 +123,6 @@ namespace FNA.Numerics
             result = Vector2.Dot(vector1, vector2);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Hermite(
             Vector2 value1,
             Vector2 tangent1,
@@ -143,7 +138,6 @@ namespace FNA.Numerics
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Hermite(
             ref Vector2 value1,
             ref Vector2 tangent1,
@@ -212,7 +206,6 @@ namespace FNA.Numerics
             result = Vector2.Reflect(vector, normal);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 SmoothStep(Vector2 value1, Vector2 value2, float amount)
         {
             if (amount > 1f) amount = 1f;
@@ -221,7 +214,6 @@ namespace FNA.Numerics
             return value1 + (value2 - value1) * amount;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SmoothStep(
             ref Vector2 value1,
             ref Vector2 value2,
