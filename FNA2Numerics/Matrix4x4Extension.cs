@@ -2,68 +2,8 @@
 
 namespace FNA.Numerics
 {
-    public static class MatrixExtension
+    public static class Matrix4x4Extension
     {
-        public static Vector3 get_Backward(this ref Matrix4x4 matrix)
-        {
-            return new Vector3(matrix.M31, matrix.M32, matrix.M33);
-        }
-        public static void set_Backward(this ref Matrix4x4 matrix, Vector3 value)
-        {
-            matrix.M31 = value.X;
-            matrix.M32 = value.Y;
-            matrix.M33 = value.Z;
-        }
-        public static Vector3 get_Down(this ref Matrix4x4 matrix)
-        {
-            return new Vector3(-matrix.M21, -matrix.M22, -matrix.M23);
-        }
-        public static void set_Down(this ref Matrix4x4 matrix, Vector3 value)
-        {
-            matrix.M21 = -value.X;
-            matrix.M22 = -value.Y;
-            matrix.M23 = -value.Z;
-        }
-        public static Vector3 get_Forward(this ref Matrix4x4 matrix)
-        {
-            return new Vector3(-matrix.M31, -matrix.M32, -matrix.M33);
-        }
-        public static void set_Forward(this ref Matrix4x4 matrix, Vector3 value)
-        {
-            matrix.M31 = -value.X;
-            matrix.M32 = -value.Y;
-            matrix.M33 = -value.Z;
-        }
-        public static Vector3 get_Left(this ref Matrix4x4 matrix)
-        {
-            return new Vector3(-matrix.M11, -matrix.M12, -matrix.M13);
-        }
-        public static void set_Left(this ref Matrix4x4 matrix, Vector3 value)
-        {
-            matrix.M11 = -value.X;
-            matrix.M12 = -value.Y;
-            matrix.M13 = -value.Z;
-        }
-        public static Vector3 get_Right(this ref Matrix4x4 matrix)
-        {
-            return new Vector3(matrix.M11, matrix.M12, matrix.M13);
-        }
-        public static void set_Right(this ref Matrix4x4 matrix, Vector3 value)
-        {
-            matrix.M11 = value.X;
-            matrix.M12 = value.Y;
-            matrix.M13 = value.Z;
-        }
-        public static Vector3 get_Up(this ref Matrix4x4 matrix)
-        {
-            return new Vector3(matrix.M21, matrix.M22, matrix.M23);
-        }
-        public static void set_Up(this ref Matrix4x4 matrix, Vector3 value)
-        {
-            matrix.M21 = value.X;
-            matrix.M22 = value.Y;
-            matrix.M23 = value.Z;
-        }
         public static bool Decompose(
             this ref Matrix4x4 matrix,
             out Vector3 scale,

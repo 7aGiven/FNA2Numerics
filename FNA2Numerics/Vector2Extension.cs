@@ -4,65 +4,25 @@ using System.Runtime.CompilerServices;
 
 namespace FNA.Numerics
 {
-    public static class Vector3Extension
+    public static class Vector2Extension
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 get_Up()
+        public static void Normalize(this ref Vector2 vector)
         {
-            return Vector3.UnitY;
+            vector = Vector2.Normalize(vector);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 get_Down()
+        public static void Add(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {
-            return down;
+            result = Vector2.Add(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 get_Right()
-        {
-            return Vector3.UnitX;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 get_Left()
-        {
-            return left;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 get_Forward()
-        {
-            return forward;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 get_Backward()
-        {
-            return Vector3.UnitZ;
-        }
-
-        private static Vector3 down = new Vector3(0f, -1f, 0f);
-        private static Vector3 left = new Vector3(-1f, 0f, 0f);
-        private static Vector3 forward = new Vector3(0f, 0f, -1f);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Normalize(this ref Vector3 vector)
-        {
-            vector = Vector3.Normalize(vector);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Add(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
-        {
-            result = Vector3.Add(value1, value2);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 Barycentric(
-            Vector3 value1,
-            Vector3 value2,
-            Vector3 value3,
+        public static Vector2 Barycentric(
+            Vector2 value1,
+            Vector2 value2,
+            Vector2 value3,
             float amount1,
             float amount2
         )
@@ -72,23 +32,23 @@ namespace FNA.Numerics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Barycentric(
-            ref Vector3 value1,
-            ref Vector3 value2,
-            ref Vector3 value3,
+            ref Vector2 value1,
+            ref Vector2 value2,
+            ref Vector2 value3,
             float amount1,
             float amount2,
-            out Vector3 result
+            out Vector2 result
         )
         {
             result = value1 * (1 - amount1 - amount2) + value2 * amount1 + value3 * amount2;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 CatmullRom(
-            Vector3 value1,
-            Vector3 value2,
-            Vector3 value3,
-            Vector3 value4,
+        public static Vector2 CatmullRom(
+            Vector2 value1,
+            Vector2 value2,
+            Vector2 value3,
+            Vector2 value4,
             float amount
         )
         {
@@ -104,12 +64,12 @@ namespace FNA.Numerics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CatmullRom(
-            ref Vector3 value1,
-            ref Vector3 value2,
-            ref Vector3 value3,
-            ref Vector3 value4,
+            ref Vector2 value1,
+            ref Vector2 value2,
+            ref Vector2 value3,
+            ref Vector2 value4,
             float amount,
-            out Vector3 result
+            out Vector2 result
         )
         {
             float amountSquared = amount * amount;
@@ -124,61 +84,55 @@ namespace FNA.Numerics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(
-            ref Vector3 value1,
-            ref Vector3 min,
-            ref Vector3 max,
-            out Vector3 result
+            ref Vector2 value1,
+            ref Vector2 min,
+            ref Vector2 max,
+            out Vector2 result
         )
         {
-            result = Vector3.Clamp(value1, min, max);
+            result = Vector2.Clamp(value1, min, max);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Cross(ref Vector3 vector1, ref Vector3 vector2, out Vector3 result)
+        public static void Distance(ref Vector2 value1, ref Vector2 value2, out float result)
         {
-            result = Vector3.Cross(vector1, vector2);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Distance(ref Vector3 value1, ref Vector3 value2, out float result)
-        {
-            result = Vector3.Distance(value1, value2);
+            result = Vector2.Distance(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DistanceSquared(
-            ref Vector3 value1,
-            ref Vector3 value2,
+            ref Vector2 value1,
+            ref Vector2 value2,
             out float result
         )
         {
-            result = Vector3.DistanceSquared(value1, value2);
+            result = Vector2.DistanceSquared(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Divide(ref Vector3 value1, float divider, out Vector3 result)
+        public static void Divide(ref Vector2 value1, float divider, out Vector2 result)
         {
-            result = Vector3.Divide(value1, divider);
+            result = Vector2.Divide(value1, divider);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Divide(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        public static void Divide(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {
-            result = Vector3.Divide(value1, value2);
+            result = Vector2.Divide(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Dot(ref Vector3 vector1, ref Vector3 vector2, out float result)
+        public static void Dot(ref Vector2 vector1, ref Vector2 vector2, out float result)
         {
-            result = Vector3.Dot(vector1, vector2);
+            result = Vector2.Dot(vector1, vector2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 Hermite(
-            Vector3 value1,
-            Vector3 tangent1,
-            Vector3 value2,
-            Vector3 tangent2,
+        public static Vector2 Hermite(
+            Vector2 value1,
+            Vector2 tangent1,
+            Vector2 value2,
+            Vector2 tangent2,
             float amount
         )
         {
@@ -191,12 +145,12 @@ namespace FNA.Numerics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Hermite(
-            ref Vector3 value1,
-            ref Vector3 tangent1,
-            ref Vector3 value2,
-            ref Vector3 tangent2,
+            ref Vector2 value1,
+            ref Vector2 tangent1,
+            ref Vector2 value2,
+            ref Vector2 tangent2,
             float amount,
-            out Vector3 result
+            out Vector2 result
         )
         {
             float amountSquared = amount * amount;
@@ -207,59 +161,59 @@ namespace FNA.Numerics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(
-            ref Vector3 value1,
-            ref Vector3 value2,
+            ref Vector2 value1,
+            ref Vector2 value2,
             float amount,
-            out Vector3 result
+            out Vector2 result
         )
         {
-            result = Vector3.Lerp(value1, value2, amount);
+            result = Vector2.Lerp(value1, value2, amount);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Max(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        public static void Max(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {
-            result = Vector3.Max(value1, value2);
+            result = Vector2.Max(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Min(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        public static void Min(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {
-            result = Vector3.Min(value1, value2);
+            result = Vector2.Min(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Multiply(ref Vector3 value1, float scaleFactor, out Vector3 result)
+        public static void Multiply(ref Vector2 value1, float scaleFactor, out Vector2 result)
         {
-            result = Vector3.Multiply(value1, scaleFactor);
+            result = Vector2.Multiply(value1, scaleFactor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Multiply(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        public static void Multiply(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {
-            result = Vector3.Multiply(value1, value2);
+            result = Vector2.Multiply(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Negate(ref Vector3 value, out Vector3 result)
+        public static void Negate(ref Vector2 value, out Vector2 result)
         {
-            result = Vector3.Negate(value);
+            result = Vector2.Negate(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Normalize(ref Vector3 vector, out Vector3 result)
+        public static void Normalize(ref Vector2 vector, out Vector2 result)
         {
-            result = Vector3.Normalize(vector);
+            result = Vector2.Normalize(vector);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Reflect(ref Vector3 vector, ref Vector3 normal, out Vector3 result)
+        public static void Reflect(ref Vector2 vector, ref Vector2 normal, out Vector2 result)
         {
-            result = Vector3.Reflect(vector, normal);
+            result = Vector2.Reflect(vector, normal);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 SmoothStep(Vector3 value1, Vector3 value2, float amount)
+        public static Vector2 SmoothStep(Vector2 value1, Vector2 value2, float amount)
         {
             if (amount > 1f) amount = 1f;
             if (amount < 0f) amount = 0f;
@@ -269,10 +223,10 @@ namespace FNA.Numerics
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SmoothStep(
-            ref Vector3 value1,
-            ref Vector3 value2,
+            ref Vector2 value1,
+            ref Vector2 value2,
             float amount,
-            out Vector3 result
+            out Vector2 result
         )
         {
             if (amount > 1f) amount = 1f;
@@ -282,21 +236,21 @@ namespace FNA.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Subtract(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        public static void Subtract(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {
-            result = Vector3.Subtract(value1, value2);
+            result = Vector2.Subtract(value1, value2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Transform(ref Vector3 position, ref Matrix4x4 matrix, out Vector3 result)
+        public static void Transform(ref Vector2 position, ref Matrix4x4 matrix, out Vector2 result)
         {
-            result = Vector3.Transform(position, matrix);
+            result = Vector2.Transform(position, matrix);
         }
 
         public static void Transform(
-            Vector3[] sourceArray,
+            Vector2[] sourceArray,
             ref Matrix4x4 matrix,
-            Vector3[] destinationArray
+            Vector2[] destinationArray
         )
         {
             if (sourceArray == null)
@@ -313,15 +267,15 @@ namespace FNA.Numerics
             }
             for (int i = sourceArray.Length - 1; i >= 0; i--)
             {
-                destinationArray[i] = Vector3.Transform(sourceArray[i], matrix);
+                destinationArray[i] = Vector2.Transform(sourceArray[i], matrix);
             }
         }
 
         public static void Transform(
-            Vector3[] sourceArray,
+            Vector2[] sourceArray,
             int sourceIndex,
             ref Matrix4x4 matrix,
-            Vector3[] destinationArray,
+            Vector2[] destinationArray,
             int destinationIndex,
             int length
         )
@@ -344,25 +298,24 @@ namespace FNA.Numerics
             }
             for (int i = length - 1; i >= 0; i--)
             {
-                destinationArray[destinationIndex + i] = Vector3.Transform(sourceArray[sourceIndex + i], matrix);
+                destinationArray[destinationIndex + i] = Vector2.Transform(sourceArray[sourceIndex + i], matrix);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(
-            ref Vector3 value,
+            ref Vector2 value,
             ref Quaternion rotation,
-            out Vector3 result
+            out Vector2 result
         )
         {
-            result = Vector3.Transform(value, rotation);
+            result = Vector2.Transform(value, rotation);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(
-            Vector3[] sourceArray,
+            Vector2[] sourceArray,
             ref Quaternion rotation,
-            Vector3[] destinationArray
+            Vector2[] destinationArray
         )
         {
             if (sourceArray == null)
@@ -379,15 +332,15 @@ namespace FNA.Numerics
             }
             for (int i = sourceArray.Length - 1; i >= 0; i--)
             {
-                destinationArray[i] = Vector3.Transform(sourceArray[i], rotation);
+                destinationArray[i] = Vector2.Transform(sourceArray[i], rotation);
             }
         }
 
         public static void Transform(
-            Vector3[] sourceArray,
+            Vector2[] sourceArray,
             int sourceIndex,
             ref Quaternion rotation,
-            Vector3[] destinationArray,
+            Vector2[] destinationArray,
             int destinationIndex,
             int length
         )
@@ -410,24 +363,24 @@ namespace FNA.Numerics
             }
             for (int i = length - 1; i >= 0; i--)
             {
-                destinationArray[destinationIndex + i] = Vector3.Transform(sourceArray[sourceIndex + i], rotation);
+                destinationArray[destinationIndex + i] = Vector2.Transform(sourceArray[sourceIndex + i], rotation);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void TransformNormal(
-            ref Vector3 normal,
+            ref Vector2 normal,
             ref Matrix4x4 matrix,
-            out Vector3 result
+            out Vector2 result
         )
         {
-            result = Vector3.TransformNormal(normal, matrix);
+            result = Vector2.TransformNormal(normal, matrix);
         }
 
         public static void TransformNormal(
-            Vector3[] sourceArray,
+            Vector2[] sourceArray,
             ref Matrix4x4 matrix,
-            Vector3[] destinationArray
+            Vector2[] destinationArray
         )
         {
             if (sourceArray == null)
@@ -442,17 +395,17 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = sourceArray.Length - 1; i >= 0 ; i--)
+            for (int i = sourceArray.Length - 1; i >= 0; i--)
             {
-                destinationArray[i] = Vector3.TransformNormal(sourceArray[i], matrix);
+                destinationArray[i] = Vector2.TransformNormal(sourceArray[i], matrix);
             }
         }
 
         public static void TransformNormal(
-            Vector3[] sourceArray,
+            Vector2[] sourceArray,
             int sourceIndex,
             ref Matrix4x4 matrix,
-            Vector3[] destinationArray,
+            Vector2[] destinationArray,
             int destinationIndex,
             int length
         )
@@ -475,7 +428,7 @@ namespace FNA.Numerics
             }
             for (int i = length - 1; i >= 0; i--)
             {
-                destinationArray[destinationIndex + i] = Vector3.TransformNormal(sourceArray[sourceIndex + i], matrix);
+                destinationArray[destinationIndex + i] = Vector2.TransformNormal(sourceArray[sourceIndex + i], matrix);
             }
         }
     }
