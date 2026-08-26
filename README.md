@@ -2,7 +2,7 @@
 
 A Project that migrate FNA game to System.Numerics.Vectors
 
-Methods in Vector2Extension, Vector3Extension, Vector4Extension, PlaneExtension, QuaternionExtension and Matrix4x4Extension are used for overide FNA implement.
+Methods in Vector2Extension, Vector3Extension, Vector4Extension, PlaneExtension, QuaternionExtension and Matrix4x4Extension are used for override FNA implemention.
 
 If a method have implemented by System.Numerics, will directly call.
 
