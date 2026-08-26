@@ -1887,11 +1887,37 @@ namespace Mono.Cecil {
 		{
 			var constant = owner.Constant;
 			ElementType etype;
-			//if (type.etype == ElementType.None) {
-			//	etype = ElementType.Class;
-			//} else {
-				etype = GetConstantType (type, constant);
-			//}
+			if (constant == null) {
+				etype = ElementType.Class;
+			} else if (constant is bool) {
+				etype = ElementType.Boolean;
+			} else if (constant is char) {
+				etype = ElementType.Char;
+			} else if (constant is sbyte) {
+				etype = ElementType.I1;
+			} else if (constant is byte) {
+				etype = ElementType.U1;
+			} else if (constant is short) {
+				etype = ElementType.I2;
+			} else if (constant is ushort) {
+				etype = ElementType.U2;
+			} else if (constant is int) {
+				etype = ElementType.I4;
+			} else if (constant is uint) {
+				etype = ElementType.U4;
+			} else if (constant is long) {
+				etype = ElementType.I8;
+			} else if (constant is ulong) {
+				etype = ElementType.U8;
+			} else if (constant is float) {
+				etype = ElementType.R4;
+			} else if (constant is double) {
+				etype = ElementType.R8;
+			} else if (constant is string) {
+				etype = ElementType.String;
+			} else {
+				throw new Exception ("Can't handle Constant Type: " + constant.GetType().ToString());
+			}
 
 			constant_table.AddRow (new ConstantRow (
 				etype,
