@@ -140,8 +140,12 @@ namespace FNA.Numerics
             float amountSquared = amount * amount;
             float amountCubed = amount * amountSquared;
             float num = 3f * amountSquared - 2f * amountCubed;
-            return value1 * (1f - num) + value2 * num + tangent1 * (amountCubed - 2f * amountSquared + amount) + tangent2 * (amountCubed - amountSquared);
-
+            return (
+                value1 * (1f - num) +
+                tangent1 * (amountCubed - 2f * amountSquared + amount) +
+                value2 * num +
+                tangent2 * (amountCubed - amountSquared)
+            );
         }
 
         public static void Hermite(
@@ -156,7 +160,12 @@ namespace FNA.Numerics
             float amountSquared = amount * amount;
             float amountCubed = amount * amountSquared;
             float num = 3f * amountSquared - 2f * amountCubed;
-            result = value1 * (1f - num) + value2 * num + tangent1 * (amountCubed - 2f * amountSquared + amount) + tangent2 * (amountCubed - amountSquared);
+            result = (
+                value1 * (1f - num) +
+                tangent1 * (amountCubed - 2f * amountSquared + amount) +
+                value2 * num +
+                tangent2 * (amountCubed - amountSquared)
+            );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -214,8 +223,7 @@ namespace FNA.Numerics
 
         public static Vector3 SmoothStep(Vector3 value1, Vector3 value2, float amount)
         {
-            if (amount > 1f) amount = 1f;
-            if (amount < 0f) amount = 0f;
+            if (amount < 0) amount = 0f; else if (amount > 1f) amount = 1f;
             amount = amount * amount * (3f - 2f * amount);
             return value1 + (value2 - value1) * amount;
         }
@@ -227,8 +235,7 @@ namespace FNA.Numerics
             out Vector3 result
         )
         {
-            if (amount > 1f) amount = 1f;
-            if (amount < 0f) amount = 0f;
+            if (amount < 0) amount = 0f; else if (amount > 1f) amount = 1f;
             amount = amount * amount * (3f - 2f * amount);
             result = value1 + (value2 - value1) * amount;
         }
@@ -263,10 +270,12 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = sourceArray.Length - 1; i >= 0; i--)
+            int i = 0;
+            do
             {
                 destinationArray[i] = Vector3.Transform(sourceArray[i], matrix);
-            }
+                i++;
+            } while (i < sourceArray.Length);
         }
 
         public static void Transform(
@@ -294,10 +303,12 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = length - 1; i >= 0; i--)
+            int i = 0;
+            do
             {
                 destinationArray[destinationIndex + i] = Vector3.Transform(sourceArray[sourceIndex + i], matrix);
-            }
+                i++;
+            } while (i < length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -328,10 +339,12 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = sourceArray.Length - 1; i >= 0; i--)
+            int i = 0;
+            do
             {
                 destinationArray[i] = Vector3.Transform(sourceArray[i], rotation);
-            }
+                i++;
+            } while (i < sourceArray.Length);
         }
 
         public static void Transform(
@@ -359,10 +372,12 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = length - 1; i >= 0; i--)
+            int i = 0;
+            do
             {
                 destinationArray[destinationIndex + i] = Vector3.Transform(sourceArray[sourceIndex + i], rotation);
-            }
+                i++;
+            } while (i < length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -393,10 +408,12 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = sourceArray.Length - 1; i >= 0; i--)
+            int i = 0;
+            do
             {
                 destinationArray[i] = Vector3.TransformNormal(sourceArray[i], matrix);
-            }
+                i++;
+            } while (i < sourceArray.Length);
         }
 
         public static void TransformNormal(
@@ -424,10 +441,12 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            for (int i = length - 1; i >= 0; i--)
+            int i = 0;
+            do
             {
                 destinationArray[destinationIndex + i] = Vector3.TransformNormal(sourceArray[sourceIndex + i], matrix);
-            }
+                i++;
+            } while (i < length);
         }
     }
 }
