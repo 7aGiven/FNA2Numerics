@@ -145,6 +145,12 @@ namespace FNA.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreateReflection(ref Plane value, out Matrix4x4 result)
+        {
+            result = Matrix4x4.CreateReflection(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CreateRotationX(float radians, out Matrix4x4 result)
         {
             result = Matrix4x4.CreateRotationX(radians);
@@ -209,12 +215,6 @@ namespace FNA.Numerics
         )
         {
             result = Matrix4x4.CreateTranslation(xPosition, yPosition, zPosition);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreateReflection(ref Plane value, out Matrix4x4 result)
-        {
-            result = Matrix4x4.CreateReflection(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -289,12 +289,6 @@ namespace FNA.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Transpose(ref Matrix4x4 matrix, out Matrix4x4 result)
-        {
-            result = Matrix4x4.Transpose(matrix);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(
             ref Matrix4x4 value,
             ref Quaternion rotation,
@@ -302,6 +296,12 @@ namespace FNA.Numerics
         )
         {
             result = Matrix4x4.Transform(value, rotation);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Transpose(ref Matrix4x4 matrix, out Matrix4x4 result)
+        {
+            result = Matrix4x4.Transpose(matrix);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

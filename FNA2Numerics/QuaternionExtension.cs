@@ -108,27 +108,6 @@ namespace FNA.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Slerp(
-            ref Quaternion quaternion1,
-            ref Quaternion quaternion2,
-            float amount,
-            out Quaternion result
-        )
-        {
-            result = Quaternion.Slerp(quaternion1, quaternion2, amount);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Subtract(
-            ref Quaternion quaternion1,
-            ref Quaternion quaternion2,
-            out Quaternion result
-        )
-        {
-            result = Quaternion.Subtract(quaternion1, quaternion2);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Multiply(
             ref Quaternion quaternion1,
             ref Quaternion quaternion2,
@@ -158,6 +137,27 @@ namespace FNA.Numerics
         public static void Normalize(ref Quaternion quaternion, out Quaternion result)
         {
             result = Quaternion.Normalize(quaternion);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Slerp(
+            ref Quaternion quaternion1,
+            ref Quaternion quaternion2,
+            float amount,
+            out Quaternion result
+        )
+        {
+            result = Quaternion.Slerp(quaternion1, quaternion2, amount);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Subtract(
+            ref Quaternion quaternion1,
+            ref Quaternion quaternion2,
+            out Quaternion result
+        )
+        {
+            result = Quaternion.Subtract(quaternion1, quaternion2);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using Microsoft.Xna.Framework;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace FNA.Numerics
@@ -39,6 +40,137 @@ namespace FNA.Numerics
         public static void DotNormal(this ref Plane plane, ref Vector3 value, out float result)
         {
             result = Plane.DotNormal(plane, value);
+        }
+
+        public static PlaneIntersectionType Intersects(this ref Plane plane, BoundingBox box)
+        {
+            Vector3 positiveVertex;
+            Vector3 negativeVertex;
+
+            if (plane.Normal.X >= 0)
+            {
+                positiveVertex.X = box.Max.X;
+                negativeVertex.X = box.Min.X;
+            }
+            else
+            {
+                positiveVertex.X = box.Min.X;
+                negativeVertex.X = box.Max.X;
+            }
+
+            if (plane.Normal.Y >= 0)
+            {
+                positiveVertex.Y = box.Max.Y;
+                negativeVertex.Y = box.Min.Y;
+            }
+            else
+            {
+                positiveVertex.Y = box.Min.Y;
+                negativeVertex.Y = box.Max.Y;
+            }
+
+            if (plane.Normal.Z >= 0)
+            {
+                positiveVertex.Z = box.Max.Z;
+                negativeVertex.Z = box.Min.Z;
+            }
+            else
+            {
+                positiveVertex.Z = box.Min.Z;
+                negativeVertex.Z = box.Max.Z;
+            }
+
+            if (Plane.DotCoordinate(plane, negativeVertex) > 0f)
+            {
+                return PlaneIntersectionType.Front;
+            }
+            if (Plane.DotCoordinate(plane, positiveVertex) < 0f)
+            {
+                return PlaneIntersectionType.Back;
+            }
+            return PlaneIntersectionType.Intersecting;
+        }
+
+        public static void Intersects(this ref Plane plane, ref BoundingBox box, out PlaneIntersectionType result)
+        {
+            Vector3 positiveVertex;
+            Vector3 negativeVertex;
+
+            if (plane.Normal.X >= 0)
+            {
+                positiveVertex.X = box.Max.X;
+                negativeVertex.X = box.Min.X;
+            }
+            else
+            {
+                positiveVertex.X = box.Min.X;
+                negativeVertex.X = box.Max.X;
+            }
+
+            if (plane.Normal.Y >= 0)
+            {
+                positiveVertex.Y = box.Max.Y;
+                negativeVertex.Y = box.Min.Y;
+            }
+            else
+            {
+                positiveVertex.Y = box.Min.Y;
+                negativeVertex.Y = box.Max.Y;
+            }
+
+            if (plane.Normal.Z >= 0)
+            {
+                positiveVertex.Z = box.Max.Z;
+                negativeVertex.Z = box.Min.Z;
+            }
+            else
+            {
+                positiveVertex.Z = box.Min.Z;
+                negativeVertex.Z = box.Max.Z;
+            }
+
+            if (Plane.DotCoordinate(plane, negativeVertex) > 0f)
+            {
+                result = PlaneIntersectionType.Front;
+                return;
+            }
+            if (Plane.DotCoordinate(plane, positiveVertex) < 0f)
+            {
+                result = PlaneIntersectionType.Back;
+                return;
+            }
+            result = PlaneIntersectionType.Intersecting;
+        }
+
+        public static PlaneIntersectionType Intersects(this ref Plane plane, BoundingSphere sphere)
+        {
+            float distance = Plane.DotCoordinate(plane, sphere.Center);
+            if (distance > sphere.Radius)
+            {
+                return PlaneIntersectionType.Front;
+            }
+            if (distance < -sphere.Radius)
+            {
+                return PlaneIntersectionType.Back;
+            }
+            return PlaneIntersectionType.Intersecting;
+        }
+
+        public static void Intersects(this ref Plane plane, ref BoundingSphere sphere, out PlaneIntersectionType result)
+        {
+            float distance = Plane.DotCoordinate(plane, sphere.Center);
+            if (distance > sphere.Radius)
+            {
+                result = PlaneIntersectionType.Front;
+            }
+            else if (distance < -sphere.Radius)
+            {
+                result = PlaneIntersectionType.Back;
+            }
+            else
+            {
+                result = PlaneIntersectionType.Intersecting;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
