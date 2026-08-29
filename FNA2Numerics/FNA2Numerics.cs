@@ -10,56 +10,306 @@ using System.Text;
 
 namespace FNA2Numerics
 {
-    static class Program
+    public static class FNA2Numerics
     {
-        static HashSet<string> methodForward = new HashSet<string>();
-        static void Main(string[] args)
-        {
-            if (args.Length == 0)
-            {
-                Console.Error.WriteLine("Usage: Do both command\nFNA2Numerics.exe FNA.dll\nFNA2Numerics.exe game.exe");
-                return;
-            }
-            string path = args[0];
+        static readonly string methodForwards = @"
+Vector2.get_Zero()
+Vector2.get_One()
+Vector2.get_UnitX()
+Vector2.get_UnitY()
+Vector2.GetHashCode()
+Vector2.Equals(Object)
+Vector2.ToString()
+Vector2.ToString(String)
+Vector2.ToString(String,IFormatProvider)
+Vector2.Length()
+Vector2.LengthSquared()
+Vector2.Distance(Vector2,Vector2)
+Vector2.DistanceSquared(Vector2,Vector2)
+Vector2.Normalize(Vector2)
+Vector2.Reflect(Vector2,Vector2)
+Vector2.Clamp(Vector2,Vector2,Vector2)
+Vector2.Lerp(Vector2,Vector2,Single)
+Vector2.Transform(Vector2,Matrix3x2)
+Vector2.Transform(Vector2,Matrix)
+Vector2.TransformNormal(Vector2,Matrix3x2)
+Vector2.TransformNormal(Vector2,Matrix)
+Vector2.Transform(Vector2,Quaternion)
+Vector2.Add(Vector2,Vector2)
+Vector2.Subtract(Vector2,Vector2)
+Vector2.Multiply(Vector2,Vector2)
+Vector2.Multiply(Vector2,Single)
+Vector2.Multiply(Single,Vector2)
+Vector2.Divide(Vector2,Vector2)
+Vector2.Divide(Vector2,Single)
+Vector2.Negate(Vector2)
+Vector2.CopyTo(Single[])
+Vector2.CopyTo(Single[],Int32)
+Vector2.Equals(Vector2)
+Vector2.Dot(Vector2,Vector2)
+Vector2.Min(Vector2,Vector2)
+Vector2.Max(Vector2,Vector2)
+Vector2.Abs(Vector2)
+Vector2.SquareRoot(Vector2)
+Vector2.op_Addition(Vector2,Vector2)
+Vector2.op_Subtraction(Vector2,Vector2)
+Vector2.op_Multiply(Vector2,Vector2)
+Vector2.op_Multiply(Single,Vector2)
+Vector2.op_Multiply(Vector2,Single)
+Vector2.op_Division(Vector2,Vector2)
+Vector2.op_Division(Vector2,Single)
+Vector2.op_UnaryNegation(Vector2)
+Vector2.op_Equality(Vector2,Vector2)
+Vector2.op_Inequality(Vector2,Vector2)
+Vector3.get_Zero()
+Vector3.get_One()
+Vector3.get_UnitX()
+Vector3.get_UnitY()
+Vector3.get_UnitZ()
+Vector3.GetHashCode()
+Vector3.Equals(Object)
+Vector3.ToString()
+Vector3.ToString(String)
+Vector3.ToString(String,IFormatProvider)
+Vector3.Length()
+Vector3.LengthSquared()
+Vector3.Distance(Vector3,Vector3)
+Vector3.DistanceSquared(Vector3,Vector3)
+Vector3.Normalize(Vector3)
+Vector3.Cross(Vector3,Vector3)
+Vector3.Reflect(Vector3,Vector3)
+Vector3.Clamp(Vector3,Vector3,Vector3)
+Vector3.Lerp(Vector3,Vector3,Single)
+Vector3.Transform(Vector3,Matrix)
+Vector3.TransformNormal(Vector3,Matrix)
+Vector3.Transform(Vector3,Quaternion)
+Vector3.Add(Vector3,Vector3)
+Vector3.Subtract(Vector3,Vector3)
+Vector3.Multiply(Vector3,Vector3)
+Vector3.Multiply(Vector3,Single)
+Vector3.Multiply(Single,Vector3)
+Vector3.Divide(Vector3,Vector3)
+Vector3.Divide(Vector3,Single)
+Vector3.Negate(Vector3)
+Vector3.CopyTo(Single[])
+Vector3.CopyTo(Single[],Int32)
+Vector3.Equals(Vector3)
+Vector3.Dot(Vector3,Vector3)
+Vector3.Min(Vector3,Vector3)
+Vector3.Max(Vector3,Vector3)
+Vector3.Abs(Vector3)
+Vector3.SquareRoot(Vector3)
+Vector3.op_Addition(Vector3,Vector3)
+Vector3.op_Subtraction(Vector3,Vector3)
+Vector3.op_Multiply(Vector3,Vector3)
+Vector3.op_Multiply(Vector3,Single)
+Vector3.op_Multiply(Single,Vector3)
+Vector3.op_Division(Vector3,Vector3)
+Vector3.op_Division(Vector3,Single)
+Vector3.op_UnaryNegation(Vector3)
+Vector3.op_Equality(Vector3,Vector3)
+Vector3.op_Inequality(Vector3,Vector3)
+Vector4.get_Zero()
+Vector4.get_One()
+Vector4.get_UnitX()
+Vector4.get_UnitY()
+Vector4.get_UnitZ()
+Vector4.get_UnitW()
+Vector4.GetHashCode()
+Vector4.Equals(Object)
+Vector4.ToString()
+Vector4.ToString(String)
+Vector4.ToString(String,IFormatProvider)
+Vector4.Length()
+Vector4.LengthSquared()
+Vector4.Distance(Vector4,Vector4)
+Vector4.DistanceSquared(Vector4,Vector4)
+Vector4.Normalize(Vector4)
+Vector4.Clamp(Vector4,Vector4,Vector4)
+Vector4.Lerp(Vector4,Vector4,Single)
+Vector4.Transform(Vector2,Matrix)
+Vector4.Transform(Vector3,Matrix)
+Vector4.Transform(Vector4,Matrix)
+Vector4.Transform(Vector2,Quaternion)
+Vector4.Transform(Vector3,Quaternion)
+Vector4.Transform(Vector4,Quaternion)
+Vector4.Add(Vector4,Vector4)
+Vector4.Subtract(Vector4,Vector4)
+Vector4.Multiply(Vector4,Vector4)
+Vector4.Multiply(Vector4,Single)
+Vector4.Multiply(Single,Vector4)
+Vector4.Divide(Vector4,Vector4)
+Vector4.Divide(Vector4,Single)
+Vector4.Negate(Vector4)
+Vector4.CopyTo(Single[])
+Vector4.CopyTo(Single[],Int32)
+Vector4.Equals(Vector4)
+Vector4.Dot(Vector4,Vector4)
+Vector4.Min(Vector4,Vector4)
+Vector4.Max(Vector4,Vector4)
+Vector4.Abs(Vector4)
+Vector4.SquareRoot(Vector4)
+Vector4.op_Addition(Vector4,Vector4)
+Vector4.op_Subtraction(Vector4,Vector4)
+Vector4.op_Multiply(Vector4,Vector4)
+Vector4.op_Multiply(Vector4,Single)
+Vector4.op_Multiply(Single,Vector4)
+Vector4.op_Division(Vector4,Vector4)
+Vector4.op_Division(Vector4,Single)
+Vector4.op_UnaryNegation(Vector4)
+Vector4.op_Equality(Vector4,Vector4)
+Vector4.op_Inequality(Vector4,Vector4)
+Matrix.get_Identity()
+Matrix.get_IsIdentity()
+Matrix.get_Translation()
+Matrix.set_Translation(Vector3)
+Matrix.CreateBillboard(Vector3,Vector3,Vector3,Vector3)
+Matrix.CreateConstrainedBillboard(Vector3,Vector3,Vector3,Vector3,Vector3)
+Matrix.CreateTranslation(Vector3)
+Matrix.CreateTranslation(Single,Single,Single)
+Matrix.CreateScale(Single,Single,Single)
+Matrix.CreateScale(Single,Single,Single,Vector3)
+Matrix.CreateScale(Vector3)
+Matrix.CreateScale(Vector3,Vector3)
+Matrix.CreateScale(Single)
+Matrix.CreateScale(Single,Vector3)
+Matrix.CreateRotationX(Single)
+Matrix.CreateRotationX(Single,Vector3)
+Matrix.CreateRotationY(Single)
+Matrix.CreateRotationY(Single,Vector3)
+Matrix.CreateRotationZ(Single)
+Matrix.CreateRotationZ(Single,Vector3)
+Matrix.CreateFromAxisAngle(Vector3,Single)
+Matrix.CreatePerspectiveFieldOfView(Single,Single,Single,Single)
+Matrix.CreatePerspective(Single,Single,Single,Single)
+Matrix.CreatePerspectiveOffCenter(Single,Single,Single,Single,Single,Single)
+Matrix.CreateOrthographic(Single,Single,Single,Single)
+Matrix.CreateOrthographicOffCenter(Single,Single,Single,Single,Single,Single)
+Matrix.CreateLookAt(Vector3,Vector3,Vector3)
+Matrix.CreateWorld(Vector3,Vector3,Vector3)
+Matrix.CreateFromQuaternion(Quaternion)
+Matrix.CreateFromYawPitchRoll(Single,Single,Single)
+Matrix.CreateShadow(Vector3,Plane)
+Matrix.CreateReflection(Plane)
+Matrix.GetDeterminant()
+Matrix.Invert(Matrix,Matrix4x4&)
+Matrix.Decompose(Matrix,Vector3&,Quaternion&,Vector3&)
+Matrix.Transform(Matrix,Quaternion)
+Matrix.Transpose(Matrix)
+Matrix.Lerp(Matrix,Matrix,Single)
+Matrix.Negate(Matrix)
+Matrix.Add(Matrix,Matrix)
+Matrix.Subtract(Matrix,Matrix)
+Matrix.Multiply(Matrix,Matrix)
+Matrix.Multiply(Matrix,Single)
+Matrix.op_UnaryNegation(Matrix)
+Matrix.op_Addition(Matrix,Matrix)
+Matrix.op_Subtraction(Matrix,Matrix)
+Matrix.op_Multiply(Matrix,Matrix)
+Matrix.op_Multiply(Matrix,Single)
+Matrix.op_Equality(Matrix,Matrix)
+Matrix.op_Inequality(Matrix,Matrix)
+Matrix.Equals(Matrix)
+Matrix.Equals(Object)
+Matrix.ToString()
+Matrix.GetHashCode()
+Plane.CreateFromVertices(Vector3,Vector3,Vector3)
+Plane.Normalize(Plane)
+Plane.Transform(Plane,Matrix)
+Plane.Transform(Plane,Quaternion)
+Plane.Dot(Plane,Vector4)
+Plane.DotCoordinate(Plane,Vector3)
+Plane.DotNormal(Plane,Vector3)
+Plane.op_Equality(Plane,Plane)
+Plane.op_Inequality(Plane,Plane)
+Plane.Equals(Plane)
+Plane.Equals(Object)
+Plane.ToString()
+Plane.GetHashCode()
+Quaternion.get_Identity()
+Quaternion.get_IsIdentity()
+Quaternion.Length()
+Quaternion.LengthSquared()
+Quaternion.Normalize(Quaternion)
+Quaternion.Conjugate(Quaternion)
+Quaternion.Inverse(Quaternion)
+Quaternion.CreateFromAxisAngle(Vector3,Single)
+Quaternion.CreateFromYawPitchRoll(Single,Single,Single)
+Quaternion.CreateFromRotationMatrix(Matrix)
+Quaternion.Dot(Quaternion,Quaternion)
+Quaternion.Slerp(Quaternion,Quaternion,Single)
+Quaternion.Lerp(Quaternion,Quaternion,Single)
+Quaternion.Concatenate(Quaternion,Quaternion)
+Quaternion.Negate(Quaternion)
+Quaternion.Add(Quaternion,Quaternion)
+Quaternion.Subtract(Quaternion,Quaternion)
+Quaternion.Multiply(Quaternion,Quaternion)
+Quaternion.Multiply(Quaternion,Single)
+Quaternion.Divide(Quaternion,Quaternion)
+Quaternion.op_UnaryNegation(Quaternion)
+Quaternion.op_Addition(Quaternion,Quaternion)
+Quaternion.op_Subtraction(Quaternion,Quaternion)
+Quaternion.op_Multiply(Quaternion,Quaternion)
+Quaternion.op_Multiply(Quaternion,Single)
+Quaternion.op_Division(Quaternion,Quaternion)
+Quaternion.op_Equality(Quaternion,Quaternion)
+Quaternion.op_Inequality(Quaternion,Quaternion)
+Quaternion.Equals(Quaternion)
+Quaternion.Equals(Object)
+Quaternion.ToString()
+Quaternion.GetHashCode()
+";
+        static readonly HashSet<string> methodForward = new HashSet<string>();
 
-            Stream stream = Assembly.GetEntryAssembly().GetManifestResourceStream("FNA2Numerics.forward.txt");
-            using (StreamReader reader = new StreamReader(stream))
+        static FNA2Numerics() {
+            using (StringReader reader = new StringReader(methodForwards))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    methodForward.Add(line);
+                    if (line.Length != 0)
+                    {
+                        methodForward.Add(line);
+                    }
                 }
             }
+        }
+
+        public static void Process(string path)
+        {
+            ModuleDefinition moduleDefinition;
             if (path.EndsWith("FNA.dll"))
             {
-                ModuleDefinition moduleDefinition = ModuleDefinition.ReadModule(path, new ReaderParameters() { ReadWrite = true });
-                ProcessInternal(moduleDefinition);
-                moduleDefinition.Write();
+                using (moduleDefinition = ModuleDefinition.ReadModule(path, new ReaderParameters() { ReadWrite = true }))
+                {
+                    ProcessInternal(moduleDefinition);
+                    moduleDefinition.Write();
+                }
             }
             else
             {
-                Directory.SetCurrentDirectory(Path.GetDirectoryName(path));
-                ModuleDefinition moduleDefinition = ModuleDefinition.ReadModule(path, new ReaderParameters() { ReadWrite = true });
-                Collection<Resource> resources = moduleDefinition.Resources;
-                for (int i = 0; i < resources.Count; i++)
+                using (moduleDefinition = ModuleDefinition.ReadModule(path, new ReaderParameters() { ReadWrite = true }))
                 {
-                    EmbeddedResource embeddedResource = resources[i] as EmbeddedResource;
-                    if (embeddedResource.Name.EndsWith(".dll"))
+                    Collection<Resource> resources = moduleDefinition.Resources;
+                    for (int i = 0; i < resources.Count; i++)
                     {
-                        Console.WriteLine(embeddedResource.Name);
-                        ModuleDefinition embeddedModuleDefinition = ModuleDefinition.ReadModule(embeddedResource.GetResourceStream());
-                        ProcessExport(embeddedModuleDefinition);
-                        using (MemoryStream memoryStream = new MemoryStream())
+                        EmbeddedResource embeddedResource = resources[i] as EmbeddedResource;
+                        if (embeddedResource.Name.EndsWith(".dll"))
                         {
-                            embeddedModuleDefinition.Write(memoryStream);
-                            embeddedModuleDefinition.Dispose();
-                            resources[i] = new EmbeddedResource(embeddedResource.Name, embeddedResource.Attributes, memoryStream.ToArray());
+                            Console.WriteLine(embeddedResource.Name);
+                            ModuleDefinition embeddedModuleDefinition = ModuleDefinition.ReadModule(embeddedResource.GetResourceStream());
+                            ProcessExport(embeddedModuleDefinition);
+                            using (MemoryStream memoryStream = new MemoryStream())
+                            {
+                                embeddedModuleDefinition.Write(memoryStream);
+                                embeddedModuleDefinition.Dispose();
+                                resources[i] = new EmbeddedResource(embeddedResource.Name, embeddedResource.Attributes, memoryStream.ToArray());
+                            }
                         }
                     }
+                    ProcessExport(moduleDefinition);
+                    moduleDefinition.Write();
                 }
-                ProcessExport(moduleDefinition);
-                moduleDefinition.Write();
             }
         }
 
@@ -127,7 +377,7 @@ namespace FNA2Numerics
 
         static void ProcessInternal(ModuleDefinition moduleDefinition)
         {
-            AssemblyNameReference Numerics = AssemblyNameReference.Parse("System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+            AssemblyNameReference Numerics = AssemblyNameReference.Parse("System.Numerics.Vectors, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
             moduleDefinition.AssemblyReferences.Add(Numerics);
             for (int i = 0; i < numericsTypes.Length; i++)
             {
@@ -142,7 +392,7 @@ namespace FNA2Numerics
                 }
                 ProcessClass(typeDefinition);
             }
-            ModuleDefinition extensionModuleDefinition = ModuleDefinition.ReadModule(Assembly.GetEntryAssembly().Location);
+            ModuleDefinition extensionModuleDefinition = ModuleDefinition.ReadModule(Assembly.GetExecutingAssembly().Location);
             for (int i = 0; i < xnaTypes.Length; i++)
             {
                 TypeDefinition extensionTypeDefinition = extensionModuleDefinition.GetType("FNA.Numerics", numericsTypes[i] + "Extension");
@@ -150,7 +400,7 @@ namespace FNA2Numerics
                 typeDefinition.Namespace = extensionTypeDefinition.Namespace;
                 typeDefinition.Name = extensionTypeDefinition.Name;
                 typeDefinition.Interfaces.Clear();
-                foreach(MethodDefinition methodDefinition in typeDefinition.Methods)
+                foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
                 {
                     if (!methodDefinition.IsConstructor && !methodDefinition.IsStatic)
                     {
@@ -186,8 +436,8 @@ namespace FNA2Numerics
                     processor.InsertBefore(i0, processor.Create(OpCodes.Ldarg_0));
                     for (int i = 0; i < xnaTypes.Length; i++)
                     {
-                        processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework." + xnaTypes[i] +", Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
-                        processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics." + numericsTypes[i] +", FNA, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
+                        processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[Microsoft.Xna.Framework." + xnaTypes[i] + ", Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553]"));
+                        processor.InsertBefore(i0, processor.Create(OpCodes.Ldstr, "[System.Numerics." + numericsTypes[i] + ", FNA, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]"));
                         processor.InsertBefore(i0, processor.Create(OpCodes.Call, replace));
                     }
                     processor.InsertBefore(i0, processor.Create(OpCodes.Starg_S, (byte)0));

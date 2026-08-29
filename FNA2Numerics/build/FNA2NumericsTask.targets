@@ -1,0 +1,10 @@
+<Project>
+	<UsingTask TaskName="FNA2NumericsTask.FNA2NumericsTask" AssemblyFile="$(MSBuildThisFileDirectory)netstandard2.0/FNA2Numerics.dll" />
+	<Target Name="FNA2NumericsTarget" AfterTargets="Build">
+		<ItemGroup>
+			<InputAssemblies Include="$(OutputPath)$(TargetName)$(TargetExt)"/>
+			<InputAssemblies Include="$(OutputPath)*.dll" Exclude="$(OutputPath)$(TargetName)$(TargetExt)"/>
+		</ItemGroup>
+		<FNA2NumericsTask InputAssemblies="@(InputAssemblies)" />
+	</Target>
+</Project>
