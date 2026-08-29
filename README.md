@@ -2,7 +2,13 @@
 A Project that migrate FNA game to System.Numerics.Vectors
 
 # Usage
-### For dotnet project
+### For dotnet project with Visual Studio
+  Create a local folder and add it as nuget source
+
+  Put FNA2NumericsTask.0.2.0.nupkg into the folder
+
+  Install nupkg with Visual Studio
+### For dotnet project with command line
   Enter main project folder
 
   e.g. nupkg file locate at C:\nuget_source\FNA2NumericsTask.0.2.0.nupkg
@@ -16,8 +22,8 @@ A Project that migrate FNA game to System.Numerics.Vectors
 ### For only exe and dll without project
   Do both command
 ```
-FNA2Numerics.exe FNA.dll
-FNA2Numerics.exe game.exe
+FNA2NumericsCLI.exe FNA.dll
+FNA2NumericsCLI.exe game.exe
 ```
 
 # Detail
