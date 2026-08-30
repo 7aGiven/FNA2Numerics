@@ -1,11 +1,29 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace FNA.Numerics
 {
     public static class Vector3Extension
     {
+        public static int GetHashCode(this ref Vector3 vector)
+        {
+            return vector.X.GetHashCode() + vector.Y.GetHashCode() + vector.Z.GetHashCode();
+        }
+
+        public static string ToString(this ref Vector3 vector)
+        {
+            StringBuilder sb = new StringBuilder("{X:", 1 + 3 * 17);
+            sb.Append(vector.X);
+            sb.Append(" Y:");
+            sb.Append(vector.Y);
+            sb.Append(" Z:");
+            sb.Append(vector.Z);
+            sb.Append('}');
+            return sb.ToString();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Normalize(this ref Vector3 vector)
         {

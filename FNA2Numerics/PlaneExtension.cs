@@ -1,11 +1,31 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace FNA.Numerics
 {
     public static class PlaneExtension
     {
+        public static int GetHashCode(this ref Plane plane)
+        {
+            return plane.Normal.X.GetHashCode() + plane.Normal.Y.GetHashCode() + plane.Normal.Z.GetHashCode() + plane.D.GetHashCode();
+        }
+
+        public static string ToString(this ref Plane plane)
+        {
+            StringBuilder sb = new StringBuilder("{Normal:{X:", 9 + 17 + 1 + 3 * 17);
+            sb.Append(plane.Normal.X);
+            sb.Append(" Y:");
+            sb.Append(plane.Normal.Y);
+            sb.Append(" Z:");
+            sb.Append(plane.Normal.Z);
+            sb.Append("} D:");
+            sb.Append(plane.D);
+            sb.Append('}');
+            return sb.ToString();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(this ref Plane plane, Vector4 value)
         {

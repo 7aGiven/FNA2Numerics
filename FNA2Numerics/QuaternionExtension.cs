@@ -1,10 +1,30 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace FNA.Numerics
 {
     public static class QuaternionExtension
     {
+        public static int GetHashCode(this ref Quaternion quaternion)
+        {
+            return quaternion.X.GetHashCode() + quaternion.Y.GetHashCode() + quaternion.Z.GetHashCode() + quaternion.W.GetHashCode();
+        }
+
+        public static string ToString(this ref Quaternion quaternion)
+        {
+            StringBuilder sb = new StringBuilder("{X:", 1 + 3 * 17);
+            sb.Append(quaternion.X);
+            sb.Append(" Y:");
+            sb.Append(quaternion.Y);
+            sb.Append(" Z:");
+            sb.Append(quaternion.Z);
+            sb.Append(" W:");
+            sb.Append(quaternion.W);
+            sb.Append('}');
+            return sb.ToString();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Conjugate(this ref Quaternion quaternion)
         {

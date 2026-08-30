@@ -1,11 +1,27 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace FNA.Numerics
 {
     public static class Vector2Extension
     {
+        public static int GetHashCode(this ref Vector2 vector)
+        {
+            return vector.X.GetHashCode() + vector.Y.GetHashCode();
+        }
+
+        public static string ToString(this ref Vector2 vector)
+        {
+            StringBuilder sb = new StringBuilder("{X:", 1 + 2 * 17);
+            sb.Append(vector.X);
+            sb.Append(" Y:");
+            sb.Append(vector.Y);
+            sb.Append('}');
+            return sb.ToString();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Normalize(this ref Vector2 vector)
         {

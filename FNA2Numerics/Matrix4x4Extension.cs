@@ -1,10 +1,47 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace FNA.Numerics
 {
     public static class Matrix4x4Extension
     {
+        public static int GetHashCode(this ref Matrix4x4 matrix)
+        {
+            return (
+                matrix.M11.GetHashCode() + matrix.M12.GetHashCode() + matrix.M13.GetHashCode() + matrix.M14.GetHashCode() +
+                matrix.M21.GetHashCode() + matrix.M22.GetHashCode() + matrix.M23.GetHashCode() + matrix.M24.GetHashCode() +
+                matrix.M31.GetHashCode() + matrix.M32.GetHashCode() + matrix.M33.GetHashCode() + matrix.M34.GetHashCode() +
+                matrix.M41.GetHashCode() + matrix.M42.GetHashCode() + matrix.M43.GetHashCode() + matrix.M44.GetHashCode()
+            );
+        }
+
+        public static string ToString(this ref Matrix4x4 matrix)
+        {
+            StringBuilder sb = new StringBuilder("{ ", 5 + 2 * 3 + 16 * 19);
+            sb.Append("{M11:"); sb.Append(matrix.M11);
+            sb.Append(" M12:"); sb.Append(matrix.M12);
+            sb.Append(" M13:"); sb.Append(matrix.M13);
+            sb.Append(" M14:"); sb.Append(matrix.M14);
+            sb.Append("} ");
+            sb.Append("{M21:"); sb.Append(matrix.M21);
+            sb.Append(" M22:"); sb.Append(matrix.M22);
+            sb.Append(" M23:"); sb.Append(matrix.M23);
+            sb.Append(" M24:"); sb.Append(matrix.M24);
+            sb.Append("} ");
+            sb.Append("{M31:"); sb.Append(matrix.M31);
+            sb.Append(" M32:"); sb.Append(matrix.M32);
+            sb.Append(" M33:"); sb.Append(matrix.M33);
+            sb.Append(" M34:"); sb.Append(matrix.M34);
+            sb.Append("} ");
+            sb.Append("{M41:"); sb.Append(matrix.M41);
+            sb.Append(" M42:"); sb.Append(matrix.M42);
+            sb.Append(" M43:"); sb.Append(matrix.M43);
+            sb.Append(" M44:"); sb.Append(matrix.M44);
+            sb.Append("} }");
+            return sb.ToString();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Decompose(
             this ref Matrix4x4 matrix,
