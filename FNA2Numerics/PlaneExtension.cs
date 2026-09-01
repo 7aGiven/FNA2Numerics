@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -64,47 +65,13 @@ namespace FNA.Numerics
 
         public static PlaneIntersectionType Intersects(this ref Plane plane, BoundingBox box)
         {
-            Vector3 positiveVertex;
-            Vector3 negativeVertex;
-
-            if (plane.Normal.X >= 0)
-            {
-                positiveVertex.X = box.Max.X;
-                negativeVertex.X = box.Min.X;
-            }
-            else
-            {
-                positiveVertex.X = box.Min.X;
-                negativeVertex.X = box.Max.X;
-            }
-
-            if (plane.Normal.Y >= 0)
-            {
-                positiveVertex.Y = box.Max.Y;
-                negativeVertex.Y = box.Min.Y;
-            }
-            else
-            {
-                positiveVertex.Y = box.Min.Y;
-                negativeVertex.Y = box.Max.Y;
-            }
-
-            if (plane.Normal.Z >= 0)
-            {
-                positiveVertex.Z = box.Max.Z;
-                negativeVertex.Z = box.Min.Z;
-            }
-            else
-            {
-                positiveVertex.Z = box.Min.Z;
-                negativeVertex.Z = box.Max.Z;
-            }
-
-            if (Plane.DotCoordinate(plane, negativeVertex) > 0f)
+            float radius = Vector3.Dot(Vector3.Abs(plane.Normal), (box.Max - box.Min) * 0.5f);
+            float distance = Plane.DotCoordinate(plane, (box.Min + box.Max) * 0.5f);
+            if (distance > radius)
             {
                 return PlaneIntersectionType.Front;
             }
-            if (Plane.DotCoordinate(plane, positiveVertex) < 0f)
+            if (distance < -radius)
             {
                 return PlaneIntersectionType.Back;
             }
@@ -113,48 +80,14 @@ namespace FNA.Numerics
 
         public static void Intersects(this ref Plane plane, ref BoundingBox box, out PlaneIntersectionType result)
         {
-            Vector3 positiveVertex;
-            Vector3 negativeVertex;
-
-            if (plane.Normal.X >= 0)
-            {
-                positiveVertex.X = box.Max.X;
-                negativeVertex.X = box.Min.X;
-            }
-            else
-            {
-                positiveVertex.X = box.Min.X;
-                negativeVertex.X = box.Max.X;
-            }
-
-            if (plane.Normal.Y >= 0)
-            {
-                positiveVertex.Y = box.Max.Y;
-                negativeVertex.Y = box.Min.Y;
-            }
-            else
-            {
-                positiveVertex.Y = box.Min.Y;
-                negativeVertex.Y = box.Max.Y;
-            }
-
-            if (plane.Normal.Z >= 0)
-            {
-                positiveVertex.Z = box.Max.Z;
-                negativeVertex.Z = box.Min.Z;
-            }
-            else
-            {
-                positiveVertex.Z = box.Min.Z;
-                negativeVertex.Z = box.Max.Z;
-            }
-
-            if (Plane.DotCoordinate(plane, negativeVertex) > 0f)
+            float radius = Vector3.Dot(Vector3.Abs(plane.Normal), (box.Max - box.Min) * 0.5f);
+            float distance = Plane.DotCoordinate(plane, (box.Min + box.Max) * 0.5f);
+            if (distance > radius)
             {
                 result = PlaneIntersectionType.Front;
                 return;
             }
-            if (Plane.DotCoordinate(plane, positiveVertex) < 0f)
+            if (distance < -radius)
             {
                 result = PlaneIntersectionType.Back;
                 return;
@@ -162,14 +95,26 @@ namespace FNA.Numerics
             result = PlaneIntersectionType.Intersecting;
         }
 
+        public static PlaneIntersectionType Intersects(this ref Plane plane, BoundingFrustum frustum)
+        {
+            if (ReferenceEquals(frustum, null))
+            {
+                throw new ArgumentNullException("frustum", "This method does not accept null for this parameter.");
+            }
+            PlaneIntersectionType result;
+            frustum.Intersects(ref plane, out result);
+            return result;
+        }
+
         public static PlaneIntersectionType Intersects(this ref Plane plane, BoundingSphere sphere)
         {
+            float radius = sphere.Radius;
             float distance = Plane.DotCoordinate(plane, sphere.Center);
-            if (distance > sphere.Radius)
+            if (distance > radius)
             {
                 return PlaneIntersectionType.Front;
             }
-            if (distance < -sphere.Radius)
+            if (distance < -radius)
             {
                 return PlaneIntersectionType.Back;
             }
@@ -178,12 +123,13 @@ namespace FNA.Numerics
 
         public static void Intersects(this ref Plane plane, ref BoundingSphere sphere, out PlaneIntersectionType result)
         {
+            float radius = sphere.Radius;
             float distance = Plane.DotCoordinate(plane, sphere.Center);
-            if (distance > sphere.Radius)
+            if (distance > radius)
             {
                 result = PlaneIntersectionType.Front;
             }
-            else if (distance < -sphere.Radius)
+            else if (distance < -radius)
             {
                 result = PlaneIntersectionType.Back;
             }

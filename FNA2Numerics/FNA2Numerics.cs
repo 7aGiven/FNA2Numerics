@@ -400,6 +400,22 @@ Matrix.Equals(Object)
                     }
                 }
             }
+            foreach (string typename in new string[] { "BoundingBox", "BoundingFrustum", "BoundingSphere", "Ray" })
+            {
+                TypeDefinition extensionTypeDefinition = extensionModuleDefinition.GetType("Microsoft.Xna.Framework", typename);
+                TypeDefinition typeDefinition = moduleDefinition.GetType("Microsoft.Xna.Framework", typename);
+                foreach (MethodDefinition extenstionMethodDefinition in extensionTypeDefinition.Methods)
+                {
+                    foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
+                    {
+                        if (StringFromMethod(methodDefinition) == StringFromMethod(extenstionMethodDefinition))
+                        {
+                            CloneMethod(methodDefinition, extenstionMethodDefinition);
+                            break;
+                        }
+                    }
+                }
+            }
             TypeDefinition ContentTypeReaderManager = moduleDefinition.GetType("Microsoft.Xna.Framework.Content", "ContentTypeReaderManager");
             foreach (MethodDefinition methodDefinition in ContentTypeReaderManager.Methods)
             {

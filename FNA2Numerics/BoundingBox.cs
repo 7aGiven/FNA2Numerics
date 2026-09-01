@@ -1,6 +1,8 @@
-﻿using System;
+﻿using FNA2Numerics;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 
 namespace Microsoft.Xna.Framework
 {
@@ -15,14 +17,66 @@ namespace Microsoft.Xna.Framework
             Max = max;
         }
 
-        public bool Equals(BoundingBox other)
+        public ContainmentType Contains(BoundingBox box)
         {
-            return other.Min == Min && other.Max == Max;
+            if (
+                Max.X < box.Min.X || Min.X > box.Max.X ||
+                Max.Y < box.Min.Y || Min.Y > box.Max.Y ||
+                Max.Z < box.Min.Z || Min.Z > box.Max.Z
+            )
+            {
+                return ContainmentType.Disjoint;
+            }
+            if (
+                Min.X <= box.Min.X && box.Max.X <= Max.X &&
+                Min.Y <= box.Min.Y && box.Max.Y <= Max.Y &&
+                Min.Z <= box.Min.Z && box.Max.Z <= Max.Z
+            )
+            {
+                return ContainmentType.Contains;
+            }
+            return ContainmentType.Intersects;
         }
 
-        public override bool Equals(object obj)
+        public void Contains(ref BoundingBox box, out ContainmentType result)
         {
-            return obj is BoundingBox other && other.Min == Min && other.Max == Max;
+            if (
+                Max.X < box.Min.X || Min.X > box.Max.X ||
+                Max.Y < box.Min.Y || Min.Y > box.Max.Y ||
+                Max.Z < box.Min.Z || Min.Z > box.Max.Z
+            )
+            {
+                result = ContainmentType.Disjoint;
+                return;
+            }
+            if (
+                Min.X <= box.Min.X && box.Max.X <= Max.X &&
+                Min.Y <= box.Min.Y && box.Max.Y <= Max.Y &&
+                Min.Z <= box.Min.Z && box.Max.Z <= Max.Z
+            )
+            {
+                result = ContainmentType.Contains;
+                return;
+            }
+            result = ContainmentType.Intersects;
+        }
+
+        public ContainmentType Contains(Vector3 point)
+        {
+            return (
+                Min.X <= point.X && point.X <= Max.X &&
+                Min.Y <= point.Y && point.Y <= Max.Y &&
+                Min.Z <= point.Z && point.Z <= Max.Z
+            ) ? ContainmentType.Contains : ContainmentType.Disjoint;
+        }
+
+        public void Contains(ref Vector3 point, out ContainmentType result)
+        {
+            result = (
+                Min.X <= point.X && point.X <= Max.X &&
+                Min.Y <= point.Y && point.Y <= Max.Y &&
+                Min.Z <= point.Z && point.Z <= Max.Z
+            ) ? ContainmentType.Contains : ContainmentType.Disjoint;
         }
 
         public Vector3[] GetCorners()
@@ -60,72 +114,49 @@ namespace Microsoft.Xna.Framework
             corners[7] = Min;
         }
 
-        public override int GetHashCode()
-        {
-            return Min.X.GetHashCode() + Min.Y.GetHashCode() + Min.Z.GetHashCode() + Max.X.GetHashCode() + Max.Y.GetHashCode() + Max.Z.GetHashCode();
-        }
-
         public bool Intersects(BoundingBox box)
         {
-            return (
-                Max.X >= box.Min.X && Min.X <= box.Max.X &&
-                Max.Y >= box.Min.Y && Min.Y <= box.Max.Y &&
-                Max.Z >= box.Min.Z && Min.Z <= box.Max.Z
+            return !(
+                Max.X < box.Min.X || Min.X > box.Max.X ||
+                Max.Y < box.Min.Y || Min.Y > box.Max.Y ||
+                Max.Z < box.Min.Z || Min.Z > box.Max.Z
             );
         }
 
         public void Intersects(ref BoundingBox box, out bool result)
         {
-            result = (
-                Max.X >= box.Min.X && Min.X <= box.Max.X &&
-                Max.Y >= box.Min.Y && Min.Y <= box.Max.Y &&
-                Max.Z >= box.Min.Z && Min.Z <= box.Max.Z
+            result = !(
+                Max.X < box.Min.X || Min.X > box.Max.X ||
+                Max.Y < box.Min.Y || Min.Y > box.Max.Y ||
+                Max.Z < box.Min.Z || Min.Z > box.Max.Z
+            );
+        }
+
+        public bool Intersects(BoundingSphere sphere)
+        {
+            float radius = sphere.Radius;
+            return !(
+                Vector3.DistanceSquared(sphere.Center, Vector3.Clamp(sphere.Center, Min, Max)) > radius * radius
+            );
+        }
+
+        public void Intersects(ref BoundingSphere sphere, out bool result)
+        {
+            float radius = sphere.Radius;
+            result = !(
+                Vector3.DistanceSquared(sphere.Center, Vector3.Clamp(sphere.Center, Min, Max)) > radius * radius
             );
         }
 
         public PlaneIntersectionType Intersects(Plane plane)
         {
-            Vector3 positiveVertex;
-            Vector3 negativeVertex;
-
-            if (plane.Normal.X >= 0)
-            {
-                positiveVertex.X = Max.X;
-                negativeVertex.X = Min.X;
-            }
-            else
-            {
-                positiveVertex.X = Min.X;
-                negativeVertex.X = Max.X;
-            }
-
-            if (plane.Normal.Y >= 0)
-            {
-                positiveVertex.Y = Max.Y;
-                negativeVertex.Y = Min.Y;
-            }
-            else
-            {
-                positiveVertex.Y = Min.Y;
-                negativeVertex.Y = Max.Y;
-            }
-
-            if (plane.Normal.Z >= 0)
-            {
-                positiveVertex.Z = Max.Z;
-                negativeVertex.Z = Min.Z;
-            }
-            else
-            {
-                positiveVertex.Z = Min.Z;
-                negativeVertex.Z = Max.Z;
-            }
-
-            if (Plane.DotCoordinate(plane, negativeVertex) > 0f)
+            float radius = Vector3.Dot(Vector3.Abs(plane.Normal), (Max - Min) * 0.5f);
+            float distance = Plane.DotCoordinate(plane, (Min + Max) * 0.5f);
+            if (distance > radius)
             {
                 return PlaneIntersectionType.Front;
             }
-            if (Plane.DotCoordinate(plane, positiveVertex) < 0f)
+            if (distance < -radius)
             {
                 return PlaneIntersectionType.Back;
             }
@@ -134,48 +165,14 @@ namespace Microsoft.Xna.Framework
 
         public void Intersects(ref Plane plane, out PlaneIntersectionType result)
         {
-            Vector3 positiveVertex;
-            Vector3 negativeVertex;
-
-            if (plane.Normal.X >= 0)
-            {
-                positiveVertex.X = Max.X;
-                negativeVertex.X = Min.X;
-            }
-            else
-            {
-                positiveVertex.X = Min.X;
-                negativeVertex.X = Max.X;
-            }
-
-            if (plane.Normal.Y >= 0)
-            {
-                positiveVertex.Y = Max.Y;
-                negativeVertex.Y = Min.Y;
-            }
-            else
-            {
-                positiveVertex.Y = Min.Y;
-                negativeVertex.Y = Max.Y;
-            }
-
-            if (plane.Normal.Z >= 0)
-            {
-                positiveVertex.Z = Max.Z;
-                negativeVertex.Z = Min.Z;
-            }
-            else
-            {
-                positiveVertex.Z = Min.Z;
-                negativeVertex.Z = Max.Z;
-            }
-
-            if (Plane.DotCoordinate(plane, negativeVertex) > 0f)
+            float radius = Vector3.Dot(Vector3.Abs(plane.Normal), (Max - Min) * 0.5f);
+            float distance = Plane.DotCoordinate(plane, (Min + Max) * 0.5f);
+            if (distance > radius)
             {
                 result = PlaneIntersectionType.Front;
                 return;
             }
-            if (Plane.DotCoordinate(plane, positiveVertex) < 0f)
+            if (distance < -radius)
             {
                 result = PlaneIntersectionType.Back;
                 return;
@@ -183,20 +180,176 @@ namespace Microsoft.Xna.Framework
             result = PlaneIntersectionType.Intersecting;
         }
 
-        public bool Intersects(BoundingSphere sphere)
+        public float? Intersects(Ray ray)
         {
-            return !(
-                Vector3.DistanceSquared(sphere.Center, Vector3.Clamp(sphere.Center, Min, Max))
-                > sphere.Radius * sphere.Radius
-            );
+            float divide, t1, t2, swap;
+            float tEnter = 0f;
+            float tLeave = float.MaxValue;
+            if (Math.Abs(ray.Direction.X) < 1e-6f)
+            {
+                if (ray.Position.X < this.Min.X || ray.Position.X > this.Max.X)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                divide = 1f / ray.Direction.X;
+                t1 = (this.Min.X - ray.Position.X) * divide;
+                t2 = (this.Max.X - ray.Position.X) * divide;
+                if (t1 > t2)
+                {
+                    swap = t1;
+                    t1 = t2;
+                    t2 = swap;
+                }
+                tEnter = Math.Max(t1, tEnter);
+                tLeave = Math.Min(t2, tLeave);
+                if (tEnter > tLeave)
+                {
+                    return null;
+                }
+            }
+            if (Math.Abs(ray.Direction.Y) < 1e-6f)
+            {
+                if (ray.Position.Y < this.Min.Y || ray.Position.Y > this.Max.Y)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                divide = 1f / ray.Direction.Y;
+                t1 = (this.Min.Y - ray.Position.Y) * divide;
+                t2 = (this.Max.Y - ray.Position.Y) * divide;
+                if (t1 > t2)
+                {
+                    swap = t1;
+                    t1 = t2;
+                    t2 = swap;
+                }
+                tEnter = Math.Max(t1, tEnter);
+                tLeave = Math.Min(t2, tLeave);
+                if (tEnter > tLeave)
+                {
+                    return null;
+                }
+            }
+            if (Math.Abs(ray.Direction.Z) < 1e-6f)
+            {
+                if (ray.Position.Z < this.Min.Z || ray.Position.Z > this.Max.Z)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                divide = 1f / ray.Direction.Z;
+                t1 = (this.Min.Z - ray.Position.Z) * divide;
+                t2 = (this.Max.Z - ray.Position.Z) * divide;
+                if (t1 > t2)
+                {
+                    swap = t1;
+                    t1 = t2;
+                    t2 = swap;
+                }
+                tEnter = Math.Max(t1, tEnter);
+                tLeave = Math.Min(t2, tLeave);
+                if (tEnter > tLeave)
+                {
+                    return null;
+                }
+            }
+            return tEnter;
         }
 
-        public void Intersects(ref BoundingSphere sphere, out bool result)
+        public void Intersects(ref Ray ray, out float? result)
         {
-            result = !(
-                Vector3.DistanceSquared(sphere.Center, Vector3.Clamp(sphere.Center, Min, Max))
-                > sphere.Radius * sphere.Radius
-            );
+            float divide, t1, t2, swap;
+            float tEnter = 0f;
+            float tLeave = float.MaxValue;
+            if (Math.Abs(ray.Direction.X) < 1e-6f)
+            {
+                if (ray.Position.X < this.Min.X || ray.Position.X > this.Max.X)
+                {
+                    result = null;
+                    return;
+                }
+            }
+            else
+            {
+                divide = 1f / ray.Direction.X;
+                t1 = (this.Min.X - ray.Position.X) * divide;
+                t2 = (this.Max.X - ray.Position.X) * divide;
+                if (t1 > t2)
+                {
+                    swap = t1;
+                    t1 = t2;
+                    t2 = swap;
+                }
+                tEnter = Math.Max(t1, tEnter);
+                tLeave = Math.Min(t2, tLeave);
+                if (tEnter > tLeave)
+                {
+                    result = null;
+                    return;
+                }
+            }
+            if (Math.Abs(ray.Direction.Y) < 1e-6f)
+            {
+                if (ray.Position.Y < this.Min.Y || ray.Position.Y > this.Max.Y)
+                {
+                    result = null;
+                    return;
+                }
+            }
+            else
+            {
+                divide = 1f / ray.Direction.Y;
+                t1 = (this.Min.Y - ray.Position.Y) * divide;
+                t2 = (this.Max.Y - ray.Position.Y) * divide;
+                if (t1 > t2)
+                {
+                    swap = t1;
+                    t1 = t2;
+                    t2 = swap;
+                }
+                tEnter = Math.Max(t1, tEnter);
+                tLeave = Math.Min(t2, tLeave);
+                if (tEnter > tLeave)
+                {
+                    result = null;
+                    return;
+                }
+            }
+            if (Math.Abs(ray.Direction.Z) < 1e-6f)
+            {
+                if (ray.Position.Z < this.Min.Z || ray.Position.Z > this.Max.Z)
+                {
+                    result = null;
+                    return;
+                }
+            }
+            else
+            {
+                divide = 1f / ray.Direction.Z;
+                t1 = (this.Min.Z - ray.Position.Z) * divide;
+                t2 = (this.Max.Z - ray.Position.Z) * divide;
+                if (t1 > t2)
+                {
+                    swap = t1;
+                    t1 = t2;
+                    t2 = swap;
+                }
+                tEnter = Math.Max(t1, tEnter);
+                tLeave = Math.Min(t2, tLeave);
+                if (tEnter > tLeave)
+                {
+                    result = null;
+                    return;
+                }
+            }
+            result = tEnter;
         }
 
         public static BoundingBox CreateFromPoints(IEnumerable<Vector3> points)
@@ -249,5 +402,53 @@ namespace Microsoft.Xna.Framework
             result.Min = Vector3.Min(original.Min, additional.Min);
             result.Max = Vector3.Max(original.Max, additional.Max);
         }
+
+        #region GetHashCode ToString Equals
+
+        public override int GetHashCode()
+        {
+            return Min.X.GetHashCode() + Min.Y.GetHashCode() + Min.Z.GetHashCode() + Max.X.GetHashCode() + Max.Y.GetHashCode() + Max.Z.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder("{Min:", 2 * (1 + 3 * 17) + 11);
+            sb.Append("{X:");
+            sb.Append(Min.X);
+            sb.Append(" Y:");
+            sb.Append(Min.Y);
+            sb.Append(" Z:");
+            sb.Append(Min.Z);
+            sb.Append("} Max:{X:");
+            sb.Append(Max.X);
+            sb.Append(" Y:");
+            sb.Append(Max.Y);
+            sb.Append(" Z:");
+            sb.Append(Max.Z);
+            sb.Append("}}");
+            return sb.ToString();
+        }
+
+        public bool Equals(BoundingBox other)
+        {
+            return other.Min == Min && other.Max == Max;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BoundingBox other && other.Min == Min && other.Max == Max;
+        }
+
+        public static bool operator ==(BoundingBox a, BoundingBox b)
+        {
+            return a.Min == b.Min && a.Max == b.Max;
+        }
+
+        public static bool operator !=(BoundingBox a, BoundingBox b)
+        {
+            return a.Min != b.Min || a.Max != b.Max;
+        }
+
+        #endregion
     }
 }
