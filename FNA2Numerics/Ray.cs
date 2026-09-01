@@ -10,21 +10,6 @@ namespace FNA2Numerics
         public Vector3 Position;
         public Vector3 Direction;
 
-        public bool Equals(Ray other)
-        {
-            return other.Position == Position && other.Direction == Direction;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Ray other && other.Position == Position && other.Direction == Direction;
-        }
-
-        public override int GetHashCode()
-        {
-            return Position.X.GetHashCode() + Position.Y.GetHashCode() + Position.Z.GetHashCode() + Direction.X.GetHashCode() + Direction.Y.GetHashCode() + Direction.Z.GetHashCode();
-        }
-
         public float? Intersects(BoundingBox box)
         {
             float divide, t1, t2, swap;
@@ -227,7 +212,7 @@ namespace FNA2Numerics
             {
                 return null;
             }
-            return distanceAlongRay - (float)Math.Sqrt(dist);
+            return distanceAlongRay - (float) Math.Sqrt(dist);
         }
 
         public void Intersects(ref BoundingSphere sphere, out float? result)
@@ -252,7 +237,7 @@ namespace FNA2Numerics
                 result = null;
                 return;
             }
-            result = distanceAlongRay - (float)Math.Sqrt(dist);
+            result = distanceAlongRay - (float) Math.Sqrt(dist);
         }
 
         public float? Intersects(Plane plane)
@@ -296,6 +281,13 @@ namespace FNA2Numerics
             result = distance;
         }
 
+        #region GetHashCode ToString Equals
+
+        public override int GetHashCode()
+        {
+            return Position.X.GetHashCode() + Position.Y.GetHashCode() + Position.Z.GetHashCode() + Direction.X.GetHashCode() + Direction.Y.GetHashCode() + Direction.Z.GetHashCode();
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("{Position:", 24 + 6 * 17);
@@ -316,6 +308,16 @@ namespace FNA2Numerics
             return sb.ToString();
         }
 
+        public bool Equals(Ray other)
+        {
+            return other.Position == Position && other.Direction == Direction;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Ray other && other.Position == Position && other.Direction == Direction;
+        }
+
         public static bool operator ==(Ray a, Ray b)
         {
             return a.Position == b.Position && a.Direction == b.Direction;
@@ -325,5 +327,7 @@ namespace FNA2Numerics
         {
             return a.Position != b.Position || a.Direction != b.Direction;
         }
+
+        #endregion
     }
 }
