@@ -195,14 +195,14 @@ namespace FNA2Numerics
 
         public float? Intersects(BoundingSphere sphere)
         {
-            Vector3 difference = sphere.Center - Position;
+            Vector3 difference = sphere.Center - this.Position;
             float differenceLengthSquared = difference.LengthSquared();
             float sphereRadiusSquared = sphere.Radius * sphere.Radius;
             if (differenceLengthSquared <= sphereRadiusSquared)
             {
                 return 0f;
             }
-            float distanceAlongRay = Vector3.Dot(difference, Direction);
+            float distanceAlongRay = Vector3.Dot(difference, this.Direction);
             if (distanceAlongRay < 0f)
             {
                 return null;
@@ -217,7 +217,7 @@ namespace FNA2Numerics
 
         public void Intersects(ref BoundingSphere sphere, out float? result)
         {
-            Vector3 difference = sphere.Center - Position;
+            Vector3 difference = sphere.Center - this.Position;
             float differenceLengthSquared = difference.LengthSquared();
             float sphereRadiusSquared = sphere.Radius * sphere.Radius;
             if (differenceLengthSquared <= sphereRadiusSquared)
@@ -225,7 +225,7 @@ namespace FNA2Numerics
                 result = 0f;
                 return;
             }
-            float distanceAlongRay = Vector3.Dot(difference, Direction);
+            float distanceAlongRay = Vector3.Dot(difference, this.Direction);
             if (distanceAlongRay < 0f)
             {
                 result = null;

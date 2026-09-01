@@ -16,6 +16,7 @@ namespace Microsoft.Xna.Framework
 
         public ContainmentType Contains(BoundingBox box)
         {
+            bool flag = false;
             Vector3 center = (box.Min + box.Max) * 0.5f;
             Vector3 extent = (box.Max - box.Min) * 0.5f;
             for (int i = 0; i < 6; i++)
@@ -30,14 +31,15 @@ namespace Microsoft.Xna.Framework
                 }
                 if (!(distance < -radius))
                 {
-                    return ContainmentType.Intersects;
+                    flag = true;
                 }
             }
-            return ContainmentType.Contains;
+            return flag ? ContainmentType.Intersects : ContainmentType.Contains;
         }
 
         public void Contains(ref BoundingBox box, out ContainmentType result)
         {
+            bool flag = false;
             Vector3 center = (box.Min + box.Max) * 0.5f;
             Vector3 extent = (box.Max - box.Min) * 0.5f;
             for (int i = 0; i < 6; i++)
@@ -53,15 +55,15 @@ namespace Microsoft.Xna.Framework
                 }
                 if (!(distance < -radius))
                 {
-                    result = ContainmentType.Intersects;
-                    return;
+                    flag = true;
                 }
             }
-            result = ContainmentType.Contains;
+            result = flag ? ContainmentType.Intersects : ContainmentType.Contains;
         }
 
         public ContainmentType Contains(BoundingSphere sphere)
         {
+            bool flag = false;
             for (int i = 0; i < 6; i++)
             {
                 // inline BoundingSphere.Intersects(Plane)
@@ -72,14 +74,15 @@ namespace Microsoft.Xna.Framework
                 }
                 if (!(distance < -sphere.Radius))
                 {
-                    return ContainmentType.Intersects;
+                    flag = true;
                 }
             }
-            return ContainmentType.Contains;
+            return flag ? ContainmentType.Intersects : ContainmentType.Contains;
         }
 
         public void Contains(ref BoundingSphere sphere, out ContainmentType result)
         {
+            bool flag = false;
             for (int i = 0; i < 6; i++)
             {
                 // inline BoundingSphere.Intersects(Plane)
@@ -91,11 +94,10 @@ namespace Microsoft.Xna.Framework
                 }
                 if (!(distance < -sphere.Radius))
                 {
-                    result = ContainmentType.Intersects;
-                    return;
+                    flag = true;
                 }
             }
-            result = ContainmentType.Contains;
+            result = flag ? ContainmentType.Intersects : ContainmentType.Contains;
         }
 
         public ContainmentType Contains(Vector3 point)

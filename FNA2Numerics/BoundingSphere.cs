@@ -1,5 +1,6 @@
 ﻿using FNA2Numerics;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
@@ -169,6 +170,53 @@ namespace Microsoft.Xna.Framework
             result.Radius = Vector3.Distance(result.Center, box.Max);
         }
 
+        public static BoundingSphere CreateFromFrustum(BoundingFrustum frustum)
+        {
+            if (ReferenceEquals(frustum, null))
+            {
+                throw new ArgumentNullException("frustum");
+            }
+            return CreateFromPoints(frustum.cornerArray);
+        }
+
+        public static BoundingSphere CreateFromPoints(IEnumerable<Vector3> points)
+        {
+            if (points == null)
+            {
+                throw new ArgumentNullException("points");
+            }
+            IEnumerator<Vector3> enumerator = points.GetEnumerator();
+            if (!enumerator.MoveNext())
+            {
+                throw new ArgumentException("You should have at least one point in points.");
+            }
+            Vector3 min = enumerator.Current;
+            Vector3 max = min;
+            while (enumerator.MoveNext())
+            {
+                Vector3 point = enumerator.Current;
+                min = Vector3.Min(point, min);
+                max = Vector3.Max(point, max);
+            }
+            Vector3 extent = max - min;
+            Vector3 center = (max + min) * 0.5f;
+            float radius = Math.Max(Math.Max(extent.X, extent.Y), extent.Z) * 0.5f;
+            foreach (Vector3 point in points)
+            {
+                Vector3 diff = point - center;
+                float distance = diff.Length();
+                if (distance > radius)
+                {
+                    radius = (radius + distance) * 0.5f;
+                    center += (1f - radius / distance) * diff;
+                }
+            }
+            BoundingSphere result;
+            result.Center = center;
+            result.Radius = radius;
+            return result;
+        }
+
         public static BoundingSphere CreateMerged(BoundingSphere original, BoundingSphere additional)
         {
             Vector3 diff = Vector3.Subtract(additional.Center, original.Center);
@@ -188,9 +236,35 @@ namespace Microsoft.Xna.Framework
             }
             BoundingSphere result;
             float leftBound = Math.Min(-radius1, distance - radius2);
-            result.Radius = (Math.Max(radius1, distance + radius2) - leftBound) * 0.5f;
+            float rightBound = Math.Max(radius1, distance + radius2);
+            result.Radius = (rightBound - leftBound) * 0.5f;
             result.Center = original.Center + (diff * (1f / distance)) * (result.Radius + leftBound);
             return result;
+        }
+
+        public static void CreateMerged(ref BoundingSphere original, ref BoundingSphere additional, out BoundingSphere result)
+        {
+            Vector3 diff = Vector3.Subtract(additional.Center, original.Center);
+            float distance = diff.Length();
+            float radius1 = original.Radius;
+            float radius2 = additional.Radius;
+            if (radius1 + radius2 >= distance)
+            {
+                if (radius1 - radius2 >= distance)
+                {
+                    result = original;
+                    return;
+                }
+                if (radius2 - radius1 >= distance)
+                {
+                    result = additional;
+                    return;
+                }
+            }
+            float leftBound = Math.Min(-radius1, distance - radius2);
+            float rightBound = Math.Max(radius1, distance + radius2);
+            result.Radius = (rightBound - leftBound) * 0.5f;
+            result.Center = original.Center + (diff * (1f / distance)) * (result.Radius + leftBound);
         }
 
         #region GetHashCode ToString Equals
