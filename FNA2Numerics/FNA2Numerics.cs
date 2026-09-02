@@ -419,7 +419,10 @@ Matrix.Equals(Object)
                     {
                         MethodDefinition methodDefinition = new MethodDefinition(extenstionMethodDefinition.Name, extenstionMethodDefinition.Attributes, moduleDefinition.ImportReference(extenstionMethodDefinition.ReturnType)) { Body = extenstionMethodDefinition.Body };
                         foreach (ParameterDefinition parameter in extenstionMethodDefinition.Parameters)
+                        {
+                            parameter.ParameterType = moduleDefinition.ImportReference(parameter.ParameterType);
                             methodDefinition.Parameters.Add(parameter);
+                        }
                         typeDefinition.Methods.Add(methodDefinition);
                     }
                 }

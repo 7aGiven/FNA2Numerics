@@ -3,7 +3,7 @@ using System;
 using System.Numerics;
 using System.Text;
 
-namespace FNA2Numerics
+namespace Microsoft.Xna.Framework
 {
     // https://learn.microsoft.com/en-us/previous-versions/windows/xna/bb198582(v=xnagamestudio.40)
     public struct Ray : IEquatable<Ray>
