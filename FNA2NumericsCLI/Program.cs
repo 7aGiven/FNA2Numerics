@@ -8,7 +8,7 @@ namespace FNA2NumericsCLI
         {
             if (args.Length == 0)
             {
-                Console.Error.WriteLine("Usage: Do both command\nFNA2Numerics.exe FNA.dll\nFNA2Numerics.exe game.exe");
+                Console.Error.WriteLine("Usage: Do both command\nFNA2NumericsCLI.exe FNA.dll\nFNA2NumericsCLI.exe game.exe");
                 return;
             }
             string path = args[0];
