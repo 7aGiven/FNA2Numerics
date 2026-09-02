@@ -406,6 +406,25 @@ Matrix.Equals(Object)
                 TypeDefinition typeDefinition = moduleDefinition.GetType("Microsoft.Xna.Framework", typename);
                 foreach (MethodDefinition extenstionMethodDefinition in extensionTypeDefinition.Methods)
                 {
+                    bool flag = false;
+                    foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
+                    {
+                        if (StringFromMethod(methodDefinition) == StringFromMethod(extenstionMethodDefinition))
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (!flag)
+                    {
+                        MethodDefinition methodDefinition = new MethodDefinition(extenstionMethodDefinition.Name, extenstionMethodDefinition.Attributes, moduleDefinition.ImportReference(extenstionMethodDefinition.ReturnType)) { Body = extenstionMethodDefinition.Body };
+                        foreach (ParameterDefinition parameter in extenstionMethodDefinition.Parameters)
+                            methodDefinition.Parameters.Add(parameter);
+                        typeDefinition.Methods.Add(methodDefinition);
+                    }
+                }
+                foreach (MethodDefinition extenstionMethodDefinition in extensionTypeDefinition.Methods)
+                {
                     foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
                     {
                         if (StringFromMethod(methodDefinition) == StringFromMethod(extenstionMethodDefinition))

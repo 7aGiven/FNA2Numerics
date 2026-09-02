@@ -5,7 +5,8 @@ using System.Text;
 
 namespace FNA2Numerics
 {
-    public struct Ray
+    // https://learn.microsoft.com/en-us/previous-versions/windows/xna/bb198582(v=xnagamestudio.40)
+    public struct Ray : IEquatable<Ray>
     {
         public Vector3 Position;
         public Vector3 Direction;

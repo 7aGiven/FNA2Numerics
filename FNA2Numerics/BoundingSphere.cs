@@ -6,10 +6,13 @@ using System.Text;
 
 namespace Microsoft.Xna.Framework
 {
+    // https://learn.microsoft.com/en-us/previous-versions/windows/xna/bb195173(v=xnagamestudio.40)
     public struct BoundingSphere : IEquatable<BoundingSphere>
     {
         public Vector3 Center;
         public float Radius;
+
+        #region Public Methods
 
         public ContainmentType Contains(BoundingBox box)
         {
@@ -156,6 +159,10 @@ namespace Microsoft.Xna.Framework
             result = distanceAlongRay - (float) Math.Sqrt(dist);
         }
 
+        #endregion
+
+        #region Public Staic Methods
+
         public static BoundingSphere CreateFromBoundingBox(BoundingBox box)
         {
             BoundingSphere result;
@@ -176,7 +183,7 @@ namespace Microsoft.Xna.Framework
             {
                 throw new ArgumentNullException("frustum");
             }
-            return CreateFromPoints(frustum.cornerArray);
+            return CreateFromPoints(frustum.corners);
         }
 
         public static BoundingSphere CreateFromPoints(IEnumerable<Vector3> points)
@@ -267,6 +274,8 @@ namespace Microsoft.Xna.Framework
             result.Center = original.Center + (diff * (1f / distance)) * (result.Radius + leftBound);
         }
 
+        #endregion
+
         #region GetHashCode ToString Equals
 
         public override int GetHashCode()
@@ -276,7 +285,7 @@ namespace Microsoft.Xna.Framework
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("{Center:", 8 + 1 + 3 * 17 + 8 + 14 + 1);
+            StringBuilder sb = new StringBuilder("{Center:", 8 + 52 + 8 + 14 + 1);
             sb.Append("{X:");
             sb.Append(Center.X);
             sb.Append(" Y:");

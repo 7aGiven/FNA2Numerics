@@ -6,16 +6,15 @@ using System.Text;
 
 namespace Microsoft.Xna.Framework
 {
-    public struct BoundingBox
+    // https://learn.microsoft.com/en-us/previous-versions/windows/xna/bb195161(v=xnagamestudio.40)
+    public struct BoundingBox : IEquatable<BoundingBox>
     {
+        public const int CornerCount = 8;
+
         public Vector3 Min;
         public Vector3 Max;
 
-        public BoundingBox(Vector3 min, Vector3 max)
-        {
-            Min = min;
-            Max = max;
-        }
+        #region Public Methods
 
         public ContainmentType Contains(BoundingBox box)
         {
@@ -81,7 +80,7 @@ namespace Microsoft.Xna.Framework
 
         public Vector3[] GetCorners()
         {
-            return new Vector3[8]
+            return new Vector3[CornerCount]
             {
                 new Vector3(Min.X, Max.Y, Max.Z),
                 Max,
@@ -100,7 +99,7 @@ namespace Microsoft.Xna.Framework
             {
                 throw new ArgumentNullException("corners");
             }
-            if (corners.Length < 8)
+            if (corners.Length < CornerCount)
             {
                 throw new ArgumentOutOfRangeException("corners", "You have to have at least 8 elements to copy corners.");
             }
@@ -117,18 +116,18 @@ namespace Microsoft.Xna.Framework
         public bool Intersects(BoundingBox box)
         {
             return !(
-                Max.X < box.Min.X || Min.X > box.Max.X ||
-                Max.Y < box.Min.Y || Min.Y > box.Max.Y ||
-                Max.Z < box.Min.Z || Min.Z > box.Max.Z
+                this.Max.X < box.Min.X || this.Min.X > box.Max.X ||
+                this.Max.Y < box.Min.Y || this.Min.Y > box.Max.Y ||
+                this.Max.Z < box.Min.Z || this.Min.Z > box.Max.Z
             );
         }
 
         public void Intersects(ref BoundingBox box, out bool result)
         {
             result = !(
-                Max.X < box.Min.X || Min.X > box.Max.X ||
-                Max.Y < box.Min.Y || Min.Y > box.Max.Y ||
-                Max.Z < box.Min.Z || Min.Z > box.Max.Z
+                this.Max.X < box.Min.X || this.Min.X > box.Max.X ||
+                this.Max.Y < box.Min.Y || this.Min.Y > box.Max.Y ||
+                this.Max.Z < box.Min.Z || this.Min.Z > box.Max.Z
             );
         }
 
@@ -352,26 +351,31 @@ namespace Microsoft.Xna.Framework
             result = tEnter;
         }
 
+        #endregion
+
+        #region Public Static Methods
+
         public static BoundingBox CreateFromPoints(IEnumerable<Vector3> points)
         {
             if (points == null)
             {
                 throw new ArgumentNullException();
             }
-            bool flag = false;
-            Vector3 minVec = new Vector3(float.MaxValue);
-            Vector3 maxVec = new Vector3(float.MinValue);
-            foreach (Vector3 point in points)
-            {
-                minVec = Vector3.Min(minVec, point);
-                maxVec = Vector3.Max(maxVec, point);
-                flag = true;
-            }
-            if (!flag)
+            IEnumerator<Vector3> enumerator = points.GetEnumerator();
+            if (!enumerator.MoveNext())
             {
                 throw new ArgumentException("You should have at least one point in points");
             }
-            return new BoundingBox(minVec, maxVec);
+            BoundingBox result;
+            result.Min = enumerator.Current;
+            result.Max = result.Min;
+            while (enumerator.MoveNext())
+            {
+                Vector3 point = enumerator.Current;
+                result.Min = Vector3.Min(result.Min, point);
+                result.Max = Vector3.Max(result.Max, point);
+            }
+            return result;
         }
 
         public static BoundingBox CreateFromSphere(BoundingSphere sphere)
@@ -403,6 +407,8 @@ namespace Microsoft.Xna.Framework
             result.Max = Vector3.Max(original.Max, additional.Max);
         }
 
+        #endregion
+
         #region GetHashCode ToString Equals
 
         public override int GetHashCode()
@@ -412,7 +418,7 @@ namespace Microsoft.Xna.Framework
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("{Min:", 2 * (1 + 3 * 17) + 11);
+            StringBuilder sb = new StringBuilder("{Min:", 11 + 2 * 52);
             sb.Append("{X:");
             sb.Append(Min.X);
             sb.Append(" Y:");
