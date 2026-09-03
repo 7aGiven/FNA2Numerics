@@ -1,5 +1,4 @@
-﻿using FNA2Numerics;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Text;
 
@@ -84,6 +83,8 @@ namespace Microsoft.Xna.Framework
             corners[6] = ComputeIntersection(ref planes[5], ref ray);
         }
 
+        #region Public Methods
+
         public ContainmentType Contains(BoundingBox box)
         {
             bool flag = false;
@@ -109,7 +110,7 @@ namespace Microsoft.Xna.Framework
 
         public void Contains(ref BoundingBox box, out ContainmentType result)
         {
-            bool flag = false;
+            bool intersects = false;
             Vector3 center = (box.Min + box.Max) * 0.5f;
             Vector3 extent = (box.Max - box.Min) * 0.5f;
             for (int i = 0; i < 6; i++)
@@ -125,15 +126,15 @@ namespace Microsoft.Xna.Framework
                 }
                 if (!(distance < -radius))
                 {
-                    flag = true;
+                    intersects = true;
                 }
             }
-            result = flag ? ContainmentType.Intersects : ContainmentType.Contains;
+            result = intersects ? ContainmentType.Intersects : ContainmentType.Contains;
         }
 
         public ContainmentType Contains(BoundingSphere sphere)
         {
-            bool flag = false;
+            bool intersects = false;
             for (int i = 0; i < 6; i++)
             {
                 // inline BoundingSphere.Intersects(Plane)
@@ -144,10 +145,10 @@ namespace Microsoft.Xna.Framework
                 }
                 if (!(distance < -sphere.Radius))
                 {
-                    flag = true;
+                    intersects = true;
                 }
             }
-            return flag ? ContainmentType.Intersects : ContainmentType.Contains;
+            return intersects ? ContainmentType.Intersects : ContainmentType.Contains;
         }
 
         public void Contains(ref BoundingSphere sphere, out ContainmentType result)
@@ -344,21 +345,19 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        #endregion
+
         private static Ray ComputeIntersectionLine(ref Plane p1, ref Plane p2)
         {
-            Ray result = new Ray
-            {
-                Direction = Vector3.Cross(p1.Normal, p2.Normal)
-            };
-            float num = result.Direction.LengthSquared();
-            result.Position = Vector3.Cross(p2.D * p1.Normal - p1.D * p2.Normal, result.Direction) / num;
+            Ray result;
+            result.Direction = Vector3.Cross(p1.Normal, p2.Normal);
+            result.Position = Vector3.Cross(p2.D * p1.Normal - p1.D * p2.Normal, result.Direction) / result.Direction.LengthSquared();
             return result;
         }
 
         private static Vector3 ComputeIntersection(ref Plane plane, ref Ray ray)
         {
-            float num = -Plane.DotCoordinate(plane, ray.Position) / Vector3.Dot(plane.Normal, ray.Direction);
-            return ray.Position + ray.Direction * num;
+            return ray.Position + ray.Direction * (-Plane.DotCoordinate(plane, ray.Position) / Vector3.Dot(plane.Normal, ray.Direction));
         }
 
         #region GetHashCode ToString Equals
