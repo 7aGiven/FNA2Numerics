@@ -214,6 +214,46 @@ namespace Microsoft.Xna.Framework
             this.corners.CopyTo(corners, 0);
         }
 
+        public unsafe bool Intersects(BoundingSphere sphere)
+        {
+            int outsideLength = 0;
+            int* outsides = stackalloc int[3];
+            for (int i = 0; i < 6; i++)
+            {
+                float distance = Plane.DotCoordinate(planes[i], sphere.Center);
+                if (distance > sphere.Radius)
+                {
+                    return false;
+                }
+                if (distance > 0)
+                {
+                    outsides[outsideLength] = i;
+                    outsideLength++;
+                }
+            }
+            switch (outsideLength)
+            {
+                case 0:
+                case 1:
+                    return true;
+                case 2:
+                    int[] cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
+                    int free = 3 - outsides[0] / 2 - outsides[1] / 2;
+                    Vector3 corner1 = corners[cornerMap[outsides[0] % 2 << outsides[0] / 2 | outsides[1] % 2 << outsides[1] / 2]];
+                    Vector3 corner2 = corners[cornerMap[outsides[0] % 2 << outsides[0] / 2 | outsides[1] % 2 << outsides[1] / 2 | 1 << free]];
+                    Vector3 direction = corner2 - corner1;
+                    Vector3 lineToPoint = sphere.Center - corner1;
+                    float t = MathHelper.Clamp(Vector3.Dot(lineToPoint, direction) / direction.LengthSquared(), 0f, 1f);
+                    return Vector3.DistanceSquared(sphere.Center, corner1 + t * direction) <= sphere.Radius * sphere.Radius;
+                case 3:
+                    cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
+                    Vector3 corner = corners[cornerMap[outsides[0] % 2 | outsides[1] % 2 << 1 | outsides[2] % 2 << 2]];
+                    return Vector3.DistanceSquared(corner, sphere.Center) <= sphere.Radius * sphere.Radius;
+                default:
+                    throw new Exception("Never Reach Code");
+            }
+        }
+
         public PlaneIntersectionType Intersects(Plane plane)
         {
             bool flag = Plane.DotCoordinate(plane, corners[0]) > 0f;
