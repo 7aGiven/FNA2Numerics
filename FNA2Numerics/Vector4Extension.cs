@@ -290,12 +290,10 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            int i = 0;
-            do
+            for (int i = 0; i < sourceArray.Length; i++)
             {
                 destinationArray[i] = Vector4.Transform(sourceArray[i], matrix);
-                i++;
-            } while (i < sourceArray.Length);
+            }
         }
 
         public static void Transform(
@@ -323,12 +321,10 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            int i = 0;
-            do
+            for (int i = 0; i < length; i++)
             {
                 destinationArray[destinationIndex + i] = Vector4.Transform(sourceArray[sourceIndex + i], matrix);
-                i++;
-            } while (i < length);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -379,12 +375,10 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            int i = 0;
-            do
+            for (int i = 0; i < sourceArray.Length; i++)
             {
                 destinationArray[i] = Vector4.Transform(sourceArray[i], rotation);
-                i++;
-            } while (i < sourceArray.Length);
+            }
         }
 
         public static void Transform(
@@ -412,12 +406,10 @@ namespace FNA.Numerics
             {
                 throw new ArgumentException("Target array size must be equal or bigger than source array size.");
             }
-            int i = 0;
-            do
+            for (int i = 0; i < length; i++)
             {
                 destinationArray[destinationIndex + i] = Vector4.Transform(sourceArray[sourceIndex + i], rotation);
-                i++;
-            } while (i < length);
+            }
         }
     }
 }
