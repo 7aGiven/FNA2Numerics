@@ -400,10 +400,35 @@ Matrix.Equals(Object)
                     }
                 }
             }
+
+            TypeDefinition extensionPrivateImplementationDetails = extensionModuleDefinition.GetType("", "<PrivateImplementationDetails>");
+            TypeDefinition privateImplementationDetails = moduleDefinition.GetType("", "<PrivateImplementationDetails>");
+            foreach (FieldDefinition extensionFieldDefinition  in extensionPrivateImplementationDetails.Fields)
+            {
+                FieldDefinition fieldDefinition = new FieldDefinition(extensionFieldDefinition.Name, extensionFieldDefinition.Attributes, GetType(moduleDefinition, extensionFieldDefinition.FieldType));
+                fieldDefinition.InitialValue = extensionFieldDefinition.InitialValue;
+                privateImplementationDetails.Fields.Add(fieldDefinition);
+            }
             foreach (string typename in new string[] { "BoundingBox", "BoundingFrustum", "BoundingSphere", "Ray" })
             {
                 TypeDefinition extensionTypeDefinition = extensionModuleDefinition.GetType("Microsoft.Xna.Framework", typename);
                 TypeDefinition typeDefinition = moduleDefinition.GetType("Microsoft.Xna.Framework", typename);
+                foreach (FieldDefinition extensionFieldDefinition in extensionTypeDefinition.Fields)
+                {
+                    bool exist = false;
+                    foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
+                    {
+                        if (fieldDefinition.Name == extensionFieldDefinition.Name)
+                        {
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist)
+                    {
+                        typeDefinition.Fields.Add(new FieldDefinition(extensionFieldDefinition.Name, extensionFieldDefinition.Attributes, moduleDefinition.ImportReference(extensionFieldDefinition.FieldType)));
+                    }
+                }
                 foreach (MethodDefinition extenstionMethodDefinition in extensionTypeDefinition.Methods)
                 {
                     bool flag = false;
@@ -718,6 +743,8 @@ Matrix.Equals(Object)
 
         static TypeDefinition GetType(ModuleDefinition module, TypeReference type)
         {
+            if (type.IsNested)
+                return module.GetType(type.DeclaringType.Namespace, type.DeclaringType.Name).NestedTypes.First(td => td.Name == type.Name);
             return module.GetType(type.Namespace, type.Name);
         }
     }

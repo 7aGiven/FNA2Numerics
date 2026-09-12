@@ -8,6 +8,17 @@ namespace Microsoft.Xna.Framework
     public class BoundingFrustum : IEquatable<BoundingFrustum>
     {
         public const int CornerCount = 8;
+        private static readonly Vector4[] ndcCorners = new Vector4[] {
+            new Vector4(-1, +1, 0, 1),
+            new Vector4(+1, +1, 0, 1),
+            new Vector4(+1, -1, 0, 1),
+            new Vector4(-1, -1, 0, 1),
+            new Vector4(-1, +1, 1, 1),
+            new Vector4(+1, +1, 1, 1),
+            new Vector4(+1, -1, 1, 1),
+            new Vector4(-1, -1, 1, 1),
+        };
+        private static readonly int[] cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
 
         public Matrix4x4 Matrix
         {
@@ -31,19 +42,14 @@ namespace Microsoft.Xna.Framework
                 planes[4] = Plane.Normalize(new Plane(col2 - col4));
                 planes[5] = Plane.Normalize(new Plane(-col2 - col4));
 
+                Matrix4x4.Invert(value, out value);
 
-                Ray ray = ComputeIntersectionLine(ref planes[0], ref planes[2]);
-                corners[0] = ComputeIntersection(ref planes[4], ref ray);
-                corners[3] = ComputeIntersection(ref planes[5], ref ray);
-                ray = ComputeIntersectionLine(ref planes[3], ref planes[0]);
-                corners[1] = ComputeIntersection(ref planes[4], ref ray);
-                corners[2] = ComputeIntersection(ref planes[5], ref ray);
-                ray = ComputeIntersectionLine(ref planes[2], ref planes[1]);
-                corners[4] = ComputeIntersection(ref planes[4], ref ray);
-                corners[7] = ComputeIntersection(ref planes[5], ref ray);
-                ray = ComputeIntersectionLine(ref planes[1], ref planes[3]);
-                corners[5] = ComputeIntersection(ref planes[4], ref ray);
-                corners[6] = ComputeIntersection(ref planes[5], ref ray);
+                for (int i = 0; i < CornerCount; i++)
+                {
+                    Vector4 worldPos = Vector4.Transform(ndcCorners[i], value);
+                    worldPos /= worldPos.W;
+                    corners[i] = new Vector3(worldPos.X, worldPos.Y, worldPos.Z);
+                }
             }
         }
 
@@ -68,19 +74,14 @@ namespace Microsoft.Xna.Framework
             planes[4] = Plane.Normalize(new Plane(col2 - col4));
             planes[5] = Plane.Normalize(new Plane(-col2 - col4));
 
+            Matrix4x4.Invert(value, out value);
 
-            Ray ray = ComputeIntersectionLine(ref planes[0], ref planes[2]);
-            corners[0] = ComputeIntersection(ref planes[4], ref ray);
-            corners[3] = ComputeIntersection(ref planes[5], ref ray);
-            ray = ComputeIntersectionLine(ref planes[3], ref planes[0]);
-            corners[1] = ComputeIntersection(ref planes[4], ref ray);
-            corners[2] = ComputeIntersection(ref planes[5], ref ray);
-            ray = ComputeIntersectionLine(ref planes[2], ref planes[1]);
-            corners[4] = ComputeIntersection(ref planes[4], ref ray);
-            corners[7] = ComputeIntersection(ref planes[5], ref ray);
-            ray = ComputeIntersectionLine(ref planes[1], ref planes[3]);
-            corners[5] = ComputeIntersection(ref planes[4], ref ray);
-            corners[6] = ComputeIntersection(ref planes[5], ref ray);
+            for (int i = 0; i < CornerCount; i++)
+            {
+                Vector4 worldPos = Vector4.Transform(ndcCorners[i], value);
+                worldPos /= worldPos.W;
+                corners[i] = new Vector3(worldPos.X, worldPos.Y, worldPos.Z);
+            }
         }
 
         #region Public Methods
@@ -236,7 +237,6 @@ namespace Microsoft.Xna.Framework
                 case 0:
                     return true;
                 case 1:
-                    int[] cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
                     int free1, free2;
                     switch (outsides[0] / 2)
                     {
@@ -285,13 +285,11 @@ namespace Microsoft.Xna.Framework
                     }
                     return false;
                 case 2:
-                    cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
                     int free = 3 - outsides[0] / 2 - outsides[1] / 2;
                     corner1 = corners[cornerMap[outsides[0] % 2 << outsides[0] / 2 | outsides[1] % 2 << outsides[1] / 2]];
                     corner2 = corners[cornerMap[outsides[0] % 2 << outsides[0] / 2 | outsides[1] % 2 << outsides[1] / 2 | 1 << free]];
                     return DistanceSquarePointToSegment(sphere.Center, corner1, corner2) <= sphere.Radius * sphere.Radius;
                 case 3:
-                    cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
                     Vector3 corner = corners[cornerMap[outsides[0] % 2 | outsides[1] % 2 << 1 | outsides[2] % 2 << 2]];
                     return Vector3.DistanceSquared(corner, sphere.Center) <= sphere.Radius * sphere.Radius;
                 default:
@@ -323,7 +321,6 @@ namespace Microsoft.Xna.Framework
                     result = true;
                     return;
                 case 1:
-                    int[] cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
                     int free1, free2;
                     switch (outsides[0] / 2)
                     {
@@ -379,14 +376,12 @@ namespace Microsoft.Xna.Framework
                     result = false;
                     return;
                 case 2:
-                    cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
                     int free = 3 - outsides[0] / 2 - outsides[1] / 2;
                     corner1 = corners[cornerMap[outsides[0] % 2 << outsides[0] / 2 | outsides[1] % 2 << outsides[1] / 2]];
                     corner2 = corners[cornerMap[outsides[0] % 2 << outsides[0] / 2 | outsides[1] % 2 << outsides[1] / 2 | 1 << free]];
                     result = DistanceSquarePointToSegment(sphere.Center, corner1, corner2) <= sphere.Radius * sphere.Radius;
                     return;
                 case 3:
-                    cornerMap = new int[] { 0, 4, 1, 5, 3, 7, 2, 6 };
                     Vector3 corner = corners[cornerMap[outsides[0] % 2 | outsides[1] % 2 << 1 | outsides[2] % 2 << 2]];
                     result = Vector3.DistanceSquared(corner, sphere.Center) <= sphere.Radius * sphere.Radius;
                     return;
@@ -533,19 +528,6 @@ namespace Microsoft.Xna.Framework
             Vector3 direction = lineEnd - lineStart;
             float t = Vector3.Dot(point - lineStart, direction) / direction.LengthSquared();
             return Vector3.DistanceSquared(point, lineStart + MathHelper.Clamp(t, 0f, 1f) * direction);
-        }
-
-        private static Ray ComputeIntersectionLine(ref Plane p1, ref Plane p2)
-        {
-            Ray result;
-            result.Direction = Vector3.Cross(p1.Normal, p2.Normal);
-            result.Position = Vector3.Cross(p2.D * p1.Normal - p1.D * p2.Normal, result.Direction) / result.Direction.LengthSquared();
-            return result;
-        }
-
-        private static Vector3 ComputeIntersection(ref Plane plane, ref Ray ray)
-        {
-            return ray.Position + ray.Direction * (-Plane.DotCoordinate(plane, ray.Position) / Vector3.Dot(plane.Normal, ray.Direction));
         }
 
         #region GetHashCode ToString Equals
